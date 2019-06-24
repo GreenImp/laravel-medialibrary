@@ -2,6 +2,7 @@
 
 namespace Feature;
 
+use Config;
 use Spatie\MediaLibrary\Tests\TestCase;
 use Spatie\MediaLibrary\MediaLibraryServiceProvider;
 
@@ -19,6 +20,6 @@ class ServiceProviderTest extends TestCase
 
         $provider->register();
 
-        $this->assertEquals(config('medialibrary.default_filesystem'), config('medialibrary.disk_name'));
+        $this->assertEquals(Config::get('medialibrary.default_filesystem'), Config::get('medialibrary.disk_name'));
     }
 }

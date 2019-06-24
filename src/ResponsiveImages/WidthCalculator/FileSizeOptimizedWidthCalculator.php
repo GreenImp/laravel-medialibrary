@@ -20,7 +20,7 @@ class FileSizeOptimizedWidthCalculator implements WidthCalculator
 
     public function calculateWidths(int $fileSize, int $width, int $height): Collection
     {
-        $targetWidths = collect();
+        $targetWidths = new Collection();
 
         $targetWidths->push($width);
 

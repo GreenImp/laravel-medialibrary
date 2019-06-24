@@ -2,6 +2,7 @@
 
 namespace Spatie\MediaLibrary\ImageGenerators\FileTypes;
 
+use Config;
 use FFMpeg\FFMpeg;
 use FFMpeg\Coordinate\TimeCode;
 use Illuminate\Support\Collection;
@@ -15,8 +16,8 @@ class Video extends BaseGenerator
         $imageFile = pathinfo($file, PATHINFO_DIRNAME).'/'.pathinfo($file, PATHINFO_FILENAME).'.jpg';
 
         $ffmpeg = FFMpeg::create([
-            'ffmpeg.binaries' => config('medialibrary.ffmpeg_path'),
-            'ffprobe.binaries' => config('medialibrary.ffprobe_path'),
+            'ffmpeg.binaries' => Config::get('medialibrary.ffmpeg_path'),
+            'ffprobe.binaries' => Config::get('medialibrary.ffprobe_path'),
         ]);
 
         $video = $ffmpeg->open($file);
@@ -38,11 +39,11 @@ class Video extends BaseGenerator
 
     public function supportedExtensions(): Collection
     {
-        return collect(['webm', 'mov', 'mp4']);
+        return new Collection(['webm', 'mov', 'mp4']);
     }
 
     public function supportedMimeTypes(): Collection
     {
-        return collect(['video/webm', 'video/mpeg', 'video/mp4', 'video/quicktime']);
+        return new Collection(['video/webm', 'video/mpeg', 'video/mp4', 'video/quicktime']);
     }
 }

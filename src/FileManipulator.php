@@ -2,10 +2,8 @@
 
 namespace Spatie\MediaLibrary;
 
-use Storage;
-use Illuminate\Support\Facades\File;
+use Config;
 use Spatie\MediaLibrary\Models\Media;
-use Illuminate\Contracts\Bus\Dispatcher;
 use Spatie\MediaLibrary\Helpers\ImageFactory;
 use Spatie\MediaLibrary\Conversion\Conversion;
 use Spatie\MediaLibrary\Filesystem\Filesystem;
@@ -45,7 +43,7 @@ class FileManipulator
 
         $queuedConversions = $profileCollection->getQueuedConversions($media->collection_name);
 
-        if ($queuedConversions->isNotEmpty()) {
+        if (!$queuedConversions->isEmpty()) {
             $this->dispatchQueuedConversions($media, $queuedConversions);
         }
     }
@@ -80,7 +78,7 @@ class FileManipulator
             ->reject(function (Conversion $conversion) use ($onlyIfMissing, $media) {
                 $relativePath = $media->getPath($conversion->getName());
 
-                $rootPath = config('filesystems.disks.'.$media->disk.'.root');
+                $rootPath = Config::get('medialibrary.disks.'.$media->disk.'.root');
 
                 if ($rootPath) {
                     $relativePath = str_replace($rootPath, '', $relativePath);
@@ -89,7 +87,7 @@ class FileManipulator
                 return $onlyIfMissing && Storage::disk($media->disk)->exists($relativePath);
             })
             ->each(function (Conversion $conversion) use ($media, $imageGenerator, $copiedOriginalFile) {
-                event(new ConversionWillStart($media, $conversion, $copiedOriginalFile));
+                //event(new ConversionWillStart($media, $conversion, $copiedOriginalFile));
 
                 $copiedOriginalFile = $imageGenerator->convert($copiedOriginalFile, $conversion);
 
@@ -113,7 +111,7 @@ class FileManipulator
 
                 $media->markAsConversionGenerated($conversion->getName(), true);
 
-                event(new ConversionHasBeenCompleted($media, $conversion));
+                //event(new ConversionHasBeenCompleted($media, $conversion));
             });
 
         $temporaryDirectory->delete();
@@ -146,15 +144,15 @@ class FileManipulator
 
     protected function dispatchQueuedConversions(Media $media, ConversionCollection $queuedConversions)
     {
-        $performConversionsJobClass = config('medialibrary.jobs.perform_conversions', PerformConversions::class);
+        /*$performConversionsJobClass = Config::get('medialibrary.jobs.perform_conversions', PerformConversions::class);
 
         $job = new $performConversionsJobClass($queuedConversions, $media);
 
-        if ($customQueue = config('medialibrary.queue_name')) {
+        if ($customQueue = Config::get('medialibrary.queue_name')) {
             $job->onQueue($customQueue);
         }
 
-        app(Dispatcher::class)->dispatch($job);
+        app(Dispatcher::class)->dispatch($job);*/
     }
 
     /**

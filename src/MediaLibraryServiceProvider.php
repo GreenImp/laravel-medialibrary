@@ -2,6 +2,7 @@
 
 namespace Spatie\MediaLibrary;
 
+use Config;
 use Illuminate\Support\ServiceProvider;
 use Spatie\MediaLibrary\Commands\CleanCommand;
 use Spatie\MediaLibrary\Commands\ClearCommand;
@@ -28,7 +29,7 @@ class MediaLibraryServiceProvider extends ServiceProvider
             __DIR__.'/../resources/views' => resource_path('views/vendor/medialibrary'),
         ], 'views');
 
-        $mediaClass = config('medialibrary.media_model');
+        $mediaClass = Config::get('medialibrary.media_model');
 
         $mediaClass::observe(new MediaObserver());
 
@@ -40,33 +41,33 @@ class MediaLibraryServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/medialibrary.php', 'medialibrary');
 
         $this->app->singleton(MediaRepository::class, function () {
-            $mediaClass = config('medialibrary.media_model');
+            $mediaClass = Config::get('medialibrary.media_model');
 
             return new MediaRepository(new $mediaClass);
         });
 
-        $this->app->bind('command.medialibrary:regenerate', RegenerateCommand::class);
-        $this->app->bind('command.medialibrary:clear', ClearCommand::class);
-        $this->app->bind('command.medialibrary:clean', CleanCommand::class);
+//        $this->app->bind('command.medialibrary:regenerate', RegenerateCommand::class);
+//        $this->app->bind('command.medialibrary:clear', ClearCommand::class);
+//        $this->app->bind('command.medialibrary:clean', CleanCommand::class);
 
         $this->app->bind(Filesystem::class, Filesystem::class);
 
-        $this->app->bind(WidthCalculator::class, config('medialibrary.responsive_images.width_calculator'));
-        $this->app->bind(TinyPlaceholderGenerator::class, config('medialibrary.responsive_images.tiny_placeholder_generator'));
-
-        $this->commands([
-            'command.medialibrary:regenerate',
-            'command.medialibrary:clear',
-            'command.medialibrary:clean',
-        ]);
+//        $this->app->bind(WidthCalculator::class, Config::get('medialibrary.responsive_images.width_calculator'));
+//        $this->app->bind(TinyPlaceholderGenerator::class, Config::get('medialibrary.responsive_images.tiny_placeholder_generator'));
+//
+//        $this->commands([
+//            'command.medialibrary:regenerate',
+//            'command.medialibrary:clear',
+//            'command.medialibrary:clean',
+//        ]);
 
         $this->registerDeprecatedConfig();
     }
 
     protected function registerDeprecatedConfig()
     {
-        if (! config('medialibrary.disk_name')) {
-            config(['medialibrary.disk_name' => config('medialibrary.default_filesystem')]);
+        if (! Config::get('medialibrary.disk_name')) {
+            Config::set(['medialibrary.disk_name' => Config::get('medialibrary.default_filesystem')]);
         }
     }
 }

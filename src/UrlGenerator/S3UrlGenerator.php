@@ -2,20 +2,20 @@
 
 namespace Spatie\MediaLibrary\UrlGenerator;
 
+use Config;
 use DateTimeInterface;
-use Illuminate\Filesystem\FilesystemManager;
-use Illuminate\Contracts\Config\Repository as Config;
+use Spatie\MediaLibrary\Filesystem\FilesystemManager;
 
 class S3UrlGenerator extends BaseUrlGenerator
 {
     /** @var \Illuminate\Filesystem\FilesystemManager */
     protected $filesystemManager;
 
-    public function __construct(Config $config, FilesystemManager $filesystemManager)
+    public function __construct(FilesystemManager $filesystemManager)
     {
         $this->filesystemManager = $filesystemManager;
 
-        parent::__construct($config);
+        parent::__construct();
     }
 
     /**
@@ -27,13 +27,13 @@ class S3UrlGenerator extends BaseUrlGenerator
     {
         $url = $this->getPathRelativeToRoot();
 
-        if ($root = config('filesystems.disks.'.$this->media->disk.'.root')) {
+        if ($root = Config::get('medialibrary.disks.'.$this->media->disk.'.root')) {
             $url = $root.'/'.$url;
         }
 
         $url = $this->rawUrlEncodeFilename($url);
 
-        return config('medialibrary.s3.domain').'/'.$url;
+        return Config::get('medialibrary.s3.domain').'/'.$url;
     }
 
     /**
@@ -69,6 +69,6 @@ class S3UrlGenerator extends BaseUrlGenerator
      */
     public function getResponsiveImagesDirectoryUrl(): string
     {
-        return config('medialibrary.s3.domain').'/'.$this->pathGenerator->getPathForResponsiveImages($this->media);
+        return Config::get('medialibrary.s3.domain').'/'.$this->pathGenerator->getPathForResponsiveImages($this->media);
     }
 }

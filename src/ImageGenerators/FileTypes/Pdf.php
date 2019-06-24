@@ -32,11 +32,11 @@ class Pdf extends BaseGenerator
 
     public function supportedExtensions(): Collection
     {
-        return collect('pdf');
+        return new Collection(['pdf']);
     }
 
     public function supportedMimeTypes(): Collection
     {
-        return collect(['application/pdf']);
+        return new Collection(['application/pdf']);
     }
 }

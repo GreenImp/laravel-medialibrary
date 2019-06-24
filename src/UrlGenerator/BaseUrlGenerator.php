@@ -5,7 +5,6 @@ namespace Spatie\MediaLibrary\UrlGenerator;
 use Spatie\MediaLibrary\Models\Media;
 use Spatie\MediaLibrary\Conversion\Conversion;
 use Spatie\MediaLibrary\PathGenerator\PathGenerator;
-use Illuminate\Contracts\Config\Repository as Config;
 
 abstract class BaseUrlGenerator implements UrlGenerator
 {
@@ -18,13 +17,9 @@ abstract class BaseUrlGenerator implements UrlGenerator
     /** @var \Spatie\MediaLibrary\PathGenerator\PathGenerator */
     protected $pathGenerator;
 
-    /** @var \Illuminate\Contracts\Config\Repository */
-    protected $config;
-
     /** @param \Illuminate\Contracts\Config\Repository $config */
-    public function __construct(Config $config)
+    public function __construct()
     {
-        $this->config = $config;
     }
 
     /**

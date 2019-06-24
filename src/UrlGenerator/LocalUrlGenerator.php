@@ -2,6 +2,7 @@
 
 namespace Spatie\MediaLibrary\UrlGenerator;
 
+use Config;
 use DateTimeInterface;
 use Spatie\MediaLibrary\Exceptions\UrlCannotBeDetermined;
 
@@ -48,7 +49,7 @@ class LocalUrlGenerator extends BaseUrlGenerator
 
     protected function getBaseMediaDirectoryUrl(): string
     {
-        if ($diskUrl = $this->config->get("filesystems.disks.{$this->media->disk}.url")) {
+        if ($diskUrl = Config::get("medialibrary.disks.{$this->media->disk}.url")) {
             return str_replace(url('/'), '', $diskUrl);
         }
 
@@ -72,7 +73,7 @@ class LocalUrlGenerator extends BaseUrlGenerator
      */
     protected function getStoragePath() : string
     {
-        $diskRootPath = $this->config->get("filesystems.disks.{$this->media->disk}.root");
+        $diskRootPath = Config::get("medialibrary.disks.{$this->media->disk}.root");
 
         return realpath($diskRootPath);
     }

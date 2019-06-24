@@ -29,7 +29,7 @@ return [
         /*
          * The domain that should be prepended when generating urls.
          */
-        'domain' => 'https://'.env('AWS_BUCKET').'.s3.amazonaws.com',
+        'domain' => 'https://AWS_BUCKET.s3.amazonaws.com',
     ],
 
     'remote' => [
@@ -130,8 +130,8 @@ return [
      * thumbnails and have installed the php-ffmpeg/php-ffmpeg composer
      * dependency.
      */
-    'ffmpeg_path' => env('FFMPEG_PATH', '/usr/bin/ffmpeg'),
-    'ffprobe_path' => env('FFPROBE_PATH', '/usr/bin/ffprobe'),
+    'ffmpeg_path' => '/usr/bin/ffmpeg',
+    'ffprobe_path' => '/usr/bin/ffprobe',
 
     /*
      * The path where to store temporary files while performing image conversions.
@@ -146,5 +146,29 @@ return [
     'jobs' => [
         'perform_conversions' => Spatie\MediaLibrary\Jobs\PerformConversions::class,
         'generate_responsive_images' => Spatie\MediaLibrary\Jobs\GenerateResponsiveImages::class,
+    ],
+
+    'disks' => [
+        's3' => [
+            'driver' => 's3',
+            'key' => '',
+            'secret' => '',
+            'region' => '',
+            'bucket' => '',
+            'url' => '',
+            'root' => '',
+        ],
+        'public' => [
+            'driver' => 'local',
+            'root' => public_path('media'),
+            'url' => URL::to('/media'),
+            'visibility' => 'public',
+        ],
+        'local' => [
+            'driver' => 'local',
+            'root' => storage_path('media'),
+            'url' => '',
+            'visibility' => 'private',
+        ],
     ],
 ];

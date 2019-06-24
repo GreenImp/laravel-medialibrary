@@ -2,6 +2,7 @@
 
 namespace Spatie\MediaLibrary\HasMedia;
 
+use Config;
 use DateTimeInterface;
 use Illuminate\Http\File;
 use Illuminate\Support\Collection;
@@ -9,7 +10,7 @@ use Spatie\MediaLibrary\Models\Media;
 use Spatie\MediaLibrary\MediaRepository;
 use Illuminate\Support\Facades\Validator;
 use Spatie\MediaLibrary\FileAdder\FileAdder;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Spatie\MediaLibrary\Conversion\Conversion;
 use Spatie\MediaLibrary\FileAdder\FileAdderFactory;
 use Spatie\MediaLibrary\Events\CollectionHasBeenCleared;
@@ -41,13 +42,15 @@ trait HasMediaTrait
                 return;
             }
 
-            if (in_array(SoftDeletes::class, class_uses_recursive($entity))) {
+            if (in_array(SoftDeletingTrait::class, class_uses_recursive(get_class($entity)))) {
                 if (! $entity->forceDeleting) {
                     return;
                 }
             }
 
-            $entity->media()->get()->each->delete();
+            $entity->media()->get()->each(function($media){
+                $media->delete();
+            });
         });
     }
 
@@ -58,7 +61,7 @@ trait HasMediaTrait
      */
     public function media()
     {
-        return $this->morphMany(config('medialibrary.media_model'), 'model');
+        return $this->morphMany(Config::get('medialibrary.media_model'), 'model');
     }
 
     /**
@@ -291,11 +294,11 @@ trait HasMediaTrait
     {
         $this->removeMediaItemsNotPresentInArray($newMediaArray, $collectionName);
 
-        return collect($newMediaArray)
+        return with(new Collection($newMediaArray))
             ->map(function (array $newMediaItem) use ($collectionName) {
                 static $orderColumn = 1;
 
-                $mediaClass = config('medialibrary.media_model');
+                $mediaClass = Config::get('medialibrary.media_model');
                 $currentMedia = $mediaClass::findOrFail($newMediaItem['id']);
 
                 if ($currentMedia->collection_name !== $collectionName) {
@@ -324,7 +327,9 @@ trait HasMediaTrait
             ->reject(function (Media $currentMediaItem) use ($newMediaArray) {
                 return in_array($currentMediaItem->id, array_column($newMediaArray, 'id'));
             })
-            ->each->delete();
+            ->each(function($media){
+                $media->delete();
+            });
     }
 
     /**
@@ -337,9 +342,11 @@ trait HasMediaTrait
     public function clearMediaCollection(string $collectionName = 'default'): self
     {
         $this->getMedia($collectionName)
-            ->each->delete();
+            ->each(function(Media $media){
+                $media->delete();
+            });
 
-        event(new CollectionHasBeenCleared($this, $collectionName));
+        //event(new CollectionHasBeenCleared($this, $collectionName));
 
         if ($this->mediaIsPreloaded()) {
             unset($this->media);
@@ -359,10 +366,10 @@ trait HasMediaTrait
     public function clearMediaCollectionExcept(string $collectionName = 'default', $excludedMedia = [])
     {
         if ($excludedMedia instanceof Media) {
-            $excludedMedia = collect()->push($excludedMedia);
+            $excludedMedia = with(new Collection())->push($excludedMedia);
         }
 
-        $excludedMedia = collect($excludedMedia);
+        $excludedMedia = new Collection($excludedMedia);
 
         if ($excludedMedia->isEmpty()) {
             return $this->clearMediaCollection($collectionName);
@@ -372,7 +379,9 @@ trait HasMediaTrait
             ->reject(function (Media $media) use ($excludedMedia) {
                 return $excludedMedia->where('id', $media->id)->count();
             })
-            ->each->delete();
+            ->each(function($media){
+                $media->delete();
+            });
 
         if ($this->mediaIsPreloaded()) {
             unset($this->media);
@@ -461,9 +470,9 @@ trait HasMediaTrait
      */
     public function loadMedia(string $collectionName)
     {
-        $collection = $this->exists
+        $collection = $this->exists()
             ? $this->media
-            : collect($this->unAttachedMediaLibraryItems)->pluck('media');
+            : with(new Collection($this->unAttachedMediaLibraryItems))->pluck('media');
 
         return $collection
             ->filter(function (Media $mediaItem) use ($collectionName) {
@@ -499,7 +508,7 @@ trait HasMediaTrait
             return;
         }
 
-        $validation = Validator::make(
+        $validation = \Validator::make(
             ['file' => new File($file)],
             ['file' => 'mimetypes:'.implode(',', $allowedMimeTypes)]
         );
@@ -521,14 +530,14 @@ trait HasMediaTrait
     {
         $this->registerMediaCollections();
 
-        collect($this->mediaCollections)->each(function (MediaCollection $mediaCollection) use ($media) {
+        with(new Collection($this->mediaCollections))->each(function (MediaCollection $mediaCollection) use ($media) {
             $actualMediaConversions = $this->mediaConversions;
 
             $this->mediaConversions = [];
 
             ($mediaCollection->mediaConversionRegistrations)($media);
 
-            $preparedMediaConversions = collect($this->mediaConversions)
+            $preparedMediaConversions = with(new Collection($this->mediaConversions))
                 ->each(function (Conversion $conversion) use ($mediaCollection) {
                     $conversion->performOnCollections($mediaCollection->name);
                 })

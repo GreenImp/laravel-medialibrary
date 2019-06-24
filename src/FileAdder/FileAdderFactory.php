@@ -4,6 +4,7 @@ namespace Spatie\MediaLibrary\FileAdder;
 
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Input;
 use Spatie\MediaLibrary\Exceptions\FileCannotBeAdded\RequestDoesNotHaveFile;
 
 class FileAdderFactory
@@ -28,13 +29,13 @@ class FileAdderFactory
 
     public static function createMultipleFromRequest(Model $subject, array $keys = []): Collection
     {
-        return collect($keys)
+        return with(new Collection($keys))
             ->map(function (string $key) use ($subject) {
-                if (! request()->hasFile($key)) {
+                if (! Input::hasFile($key)) {
                     throw RequestDoesNotHaveFile::create($key);
                 }
 
-                $files = request()->file($key);
+                $files = Input::file($key);
 
                 if (! is_array($files)) {
                     return static::create($subject, $files);
@@ -49,7 +50,7 @@ class FileAdderFactory
 
     public static function createAllFromRequest(Model $subject): Collection
     {
-        $fileKeys = array_keys(request()->allFiles());
+        $fileKeys = array_keys(Input::file());
 
         return static::createMultipleFromRequest($subject, $fileKeys);
     }

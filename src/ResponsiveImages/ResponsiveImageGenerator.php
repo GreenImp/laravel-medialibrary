@@ -52,7 +52,7 @@ class ResponsiveImageGenerator
             $this->generateResponsiveImage($media, $baseImage, 'medialibrary_original', $width, $temporaryDirectory);
         }
 
-        event(new ResponsiveImagesGenerated($media));
+        //event(new ResponsiveImagesGenerated($media));
 
         $this->generateTinyJpg($media, $baseImage, 'medialibrary_original', $temporaryDirectory);
 

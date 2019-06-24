@@ -40,11 +40,11 @@ class Webp extends BaseGenerator
 
     public function supportedExtensions() : Collection
     {
-        return collect(['webp']);
+        return new Collection(['webp']);
     }
 
     public function supportedMimeTypes() : Collection
     {
-        return collect(['image/webp']);
+        return new Collection(['image/webp']);
     }
 }

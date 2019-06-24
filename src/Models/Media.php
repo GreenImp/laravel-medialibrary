@@ -2,9 +2,9 @@
 
 namespace Spatie\MediaLibrary\Models;
 
+use Config;
 use DateTimeInterface;
 use Illuminate\Support\Collection;
-use Illuminate\Support\HtmlString;
 use Spatie\MediaLibrary\Helpers\File;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Support\Htmlable;
@@ -21,7 +21,9 @@ use Spatie\MediaLibrary\UrlGenerator\UrlGeneratorFactory;
 use Spatie\MediaLibrary\Models\Traits\CustomMediaProperties;
 use Spatie\MediaLibrary\ResponsiveImages\RegisteredResponsiveImages;
 
-class Media extends Model implements Responsable, Htmlable
+use Illuminate\Support\Facades\Response;
+
+class Media extends Model
 {
     use IsSorted,
         CustomMediaProperties;
@@ -35,6 +37,53 @@ class Media extends Model implements Responsable, Htmlable
         'custom_properties' => 'array',
         'responsive_images' => 'array',
     ];
+
+    protected $table = 'media';
+
+    public function __construct(array $attributes = array())
+    {
+        parent::__construct($attributes);
+
+        $this->mutateToArrays();
+    }
+
+    public static function boot() {
+        parent::boot();
+
+        self::saving(function(Media $model) {
+            // before we save we need to cast the array properties to JSON
+            $model->mutateToJson();
+        });
+
+        self::saved(function(Media $model) {
+            // after we've saved, let's mutate the json back to arrays
+            $model->mutateToArrays();
+        });
+    }
+
+    /**
+     * Mutates the array properties from JSON to Arrays
+     */
+    public function mutateToArrays()
+    {
+        foreach($this->casts as $attribute => $type){
+            if($type === 'array') {
+                $this->attributes[$attribute] = isset($this->attributes[$attribute]) ? json_decode($this->attributes[$attribute]) : [];
+            }
+        }
+    }
+
+    /**
+     * Mutates the array properties to JSON
+     */
+    public function mutateToJson()
+    {
+        foreach($this->casts as $attribute => $type){
+            if(($type === 'array') && !is_string($this->{$attribute})) {
+                $this->attributes[$attribute] = json_encode($this->{$attribute});
+            }
+        }
+    }
 
     public function model(): MorphTo
     {
@@ -78,7 +127,7 @@ class Media extends Model implements Responsable, Htmlable
 
     public function getImageGenerators(): Collection
     {
-        return collect(config('medialibrary.image_generators'));
+        return new Collection(Config::get('medialibrary.image_generators'));
     }
 
     public function getTypeAttribute(): string
@@ -94,11 +143,15 @@ class Media extends Model implements Responsable, Htmlable
 
     public function getTypeFromExtension(): string
     {
+        /** @var ImageGenerator $imageGenerator */
         $imageGenerator = $this->getImageGenerators()
-            ->map(function (string $className) {
+            ->map(function ($className) {
                 return app($className);
             })
-            ->first->canHandleExtension(strtolower($this->extension));
+            ->first(function($key, $generator){
+                /** @var $generator ImageGenerator */
+                return $generator->canHandleExtension(strtolower($this->extension));
+            });
 
         return $imageGenerator
             ? $imageGenerator->getType()
@@ -107,11 +160,15 @@ class Media extends Model implements Responsable, Htmlable
 
     public function getTypeFromMime(): string
     {
+        /** @var ImageGenerator $imageGenerator */
         $imageGenerator = $this->getImageGenerators()
-            ->map(function (string $className) {
+            ->map(function ($className) {
                 return app($className);
             })
-            ->first->canHandleMime($this->mime_type);
+            ->first(function($key, $generator) {
+                /** @var ImageGenerator $generator */
+                return $generator->canHandleMime($this->mime_type);
+            });
 
         return $imageGenerator
             ? $imageGenerator->getType()
@@ -130,7 +187,7 @@ class Media extends Model implements Responsable, Htmlable
 
     public function getDiskDriverName(): string
     {
-        return strtolower(config("filesystems.disks.{$this->disk}.driver"));
+        return strtolower(Config::get("medialibrary.disks.{$this->disk}.driver"));
     }
 
     /*
@@ -212,7 +269,7 @@ class Media extends Model implements Responsable, Htmlable
 
     public function getGeneratedConversions(): Collection
     {
-        return collect($this->getCustomProperty('generated_conversions', []));
+        return new Collection($this->getCustomProperty('generated_conversions', []));
     }
 
     /**
@@ -232,7 +289,7 @@ class Media extends Model implements Responsable, Htmlable
             'Pragma' => 'public',
         ];
 
-        return response()->stream(function () {
+        return Response::stream(function () {
             $stream = $this->stream();
 
             fpassthru($stream);
@@ -285,7 +342,7 @@ class Media extends Model implements Responsable, Htmlable
             $extraAttributes = array_merge($attributes, $extraAttributes);
         }
 
-        $attributeString = collect($extraAttributes)
+        $attributeString = with(new Collection($extraAttributes))
             ->map(function ($value, $name) {
                 return $name.'="'.$value.'"';
             })->implode(' ');
@@ -301,14 +358,14 @@ class Media extends Model implements Responsable, Htmlable
         $width = '';
 
         if ($this->hasResponsiveImages($conversion)) {
-            $viewName = config('medialibrary.responsive_images.use_tiny_placeholders')
+            $viewName = Config::get('medialibrary.responsive_images.use_tiny_placeholders')
                 ? 'responsiveImageWithPlaceholder'
                 : 'responsiveImage';
 
             $width = $this->responsiveImages($conversion)->files->first()->width();
         }
 
-        return view("medialibrary::{$viewName}", compact(
+        return \View::make("medialibrary.{$viewName}", compact(
             'media',
             'conversion',
             'attributeString',
@@ -327,7 +384,8 @@ class Media extends Model implements Responsable, Htmlable
 
     public function copy(HasMedia $model, $collectionName = 'default'): self
     {
-        $temporaryDirectory = TemporaryDirectory::create();
+        throw new \Exception('Functionality not complete for Laravel 4.2');
+        /*$temporaryDirectory = TemporaryDirectory::create();
 
         $temporaryFile = $temporaryDirectory->path($this->file_name);
 
@@ -341,7 +399,7 @@ class Media extends Model implements Responsable, Htmlable
 
         $temporaryDirectory->delete();
 
-        return $newMedia;
+        return $newMedia;*/
     }
 
     public function responsiveImages(string $conversionName = ''): RegisteredResponsiveImages
@@ -351,6 +409,7 @@ class Media extends Model implements Responsable, Htmlable
 
     public function stream()
     {
+        /** @var Filesystem $filesystem */
         $filesystem = app(Filesystem::class);
 
         return $filesystem->getStream($this);
@@ -358,6 +417,6 @@ class Media extends Model implements Responsable, Htmlable
 
     public function __invoke(...$arguments)
     {
-        return new HtmlString($this->img(...$arguments));
+        return $this->img(...$arguments);
     }
 }

@@ -31,11 +31,11 @@ class Svg extends BaseGenerator
 
     public function supportedExtensions(): Collection
     {
-        return collect('svg');
+        return new Collection(['svg']);
     }
 
     public function supportedMimeTypes(): Collection
     {
-        return collect('image/svg+xml');
+        return new Collection(['image/svg+xml']);
     }
 }

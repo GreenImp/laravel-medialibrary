@@ -2,9 +2,11 @@
 
 namespace Spatie\MediaLibrary\FileAdder;
 
+use Config;
 use Spatie\MediaLibrary\Helpers\File;
 use Spatie\MediaLibrary\Models\Media;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\File as PendingFile;
 use Spatie\MediaLibrary\Filesystem\Filesystem;
@@ -200,7 +202,7 @@ class FileAdder
 
     public function toMediaCollectionOnCloudDisk(string $collectionName = 'default'): Media
     {
-        return $this->toMediaCollection($collectionName, config('filesystems.cloud'));
+        return $this->toMediaCollection($collectionName, 's3');
     }
 
     public function toMediaCollection(string $collectionName = 'default', string $diskName = ''): Media
@@ -209,23 +211,23 @@ class FileAdder
             throw FileDoesNotExist::create($this->pathToFile);
         }
 
-        if (filesize($this->pathToFile) > config('medialibrary.max_file_size')) {
+        if (filesize($this->pathToFile) > Config::get('medialibrary.max_file_size')) {
             throw FileIsTooBig::create($this->pathToFile);
         }
 
-        $mediaClass = config('medialibrary.media_model');
+        $mediaClass = Config::get('medialibrary.media_model');
         /** @var \Spatie\MediaLibrary\Models\Media $media */
         $media = new $mediaClass();
 
         $media->name = $this->mediaName;
 
-        $this->fileName = ($this->fileNameSanitizer)($this->fileName);
+        $this->fileName = call_user_func($this->fileNameSanitizer, $this->fileName);
 
         $media->file_name = $this->fileName;
 
         $media->disk = $this->determineDiskName($diskName, $collectionName);
 
-        if (is_null(config("filesystems.disks.{$media->disk}"))) {
+        if (is_null(Config::get("medialibrary.disks.{$media->disk}"))) {
             throw DiskDoesNotExist::create($media->disk);
         }
 
@@ -239,7 +241,12 @@ class FileAdder
 
         $media->manipulations = $this->manipulations;
 
-        if (filled($this->customHeaders)) {
+        if (
+            is_numeric($this->customHeaders) ||
+            is_bool($this->customHeaders) ||
+            !empty($this->customHeaders) ||
+            (($this->customHeaders instanceof Countable) && (count($this->customHeaders) > 0))
+        ) {
             $media->setCustomHeaders($this->customHeaders);
         }
 
@@ -264,7 +271,7 @@ class FileAdder
             }
         }
 
-        return config('medialibrary.disk_name');
+        return Config::get('medialibrary.disk_name');
     }
 
     public function defaultSanitizer(string $fileName): string
@@ -281,7 +288,7 @@ class FileAdder
 
     protected function attachMedia(Media $media)
     {
-        if (! $this->subject->exists) {
+        if (! $this->subject->exists()) {
             $this->subject->prepareToAttachMedia($media, $this);
 
             $class = get_class($this->subject);
@@ -311,18 +318,19 @@ class FileAdder
         }
 
         if ($this->generateResponsiveImages && (new ImageGenerator())->canConvert($media)) {
-            $generateResponsiveImagesJobClass = config('medialibrary.jobs.generate_responsive_images', GenerateResponsiveImages::class);
+            $generateResponsiveImagesJobClass = Config::get('medialibrary.jobs.generate_responsive_images', GenerateResponsiveImages::class);
 
             $job = new $generateResponsiveImagesJobClass($media);
 
-            if ($customQueue = config('medialibrary.queue_name')) {
+            if ($customQueue = Config::get('medialibrary.queue_name')) {
                 $job->onQueue($customQueue);
             }
 
             dispatch($job);
         }
 
-        if (optional($this->getMediaCollection($media->collection_name))->singleFile) {
+        $mediaCollection = $this->getMediaCollection($media->collection_name);
+        if (!is_null($mediaCollection) && $mediaCollection->singleFile) {
             $model->clearMediaCollectionExcept($media->collection_name, $media);
         }
     }
@@ -331,7 +339,7 @@ class FileAdder
     {
         $this->subject->registerMediaCollections();
 
-        return collect($this->subject->mediaCollections)
+        return with(new Collection($this->subject->mediaCollections))
             ->first(function (MediaCollection $collection) use ($collectionName) {
                 return $collection->name === $collectionName;
             });

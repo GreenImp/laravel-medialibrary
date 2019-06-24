@@ -2,17 +2,19 @@
 
 namespace Spatie\MediaLibrary\Filesystem;
 
+use Config;
+use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\Helpers\File;
 use Spatie\MediaLibrary\Models\Media;
 use Spatie\MediaLibrary\FileManipulator;
-use Illuminate\Contracts\Filesystem\Factory;
+use Spatie\MediaLibrary\Filesystem\FilesystemManager as Factory;
 use Spatie\MediaLibrary\Events\MediaHasBeenAdded;
 use Spatie\MediaLibrary\Conversion\ConversionCollection;
 use Spatie\MediaLibrary\PathGenerator\PathGeneratorFactory;
 
 class Filesystem
 {
-    /** @var \Illuminate\Contracts\Filesystem\Factory */
+    /** @var Factory */
     protected $filesystem;
 
     /** @var array */
@@ -27,7 +29,7 @@ class Filesystem
     {
         $this->copyToMediaLibrary($file, $media, null, $targetFileName);
 
-        event(new MediaHasBeenAdded($media));
+        //event(new MediaHasBeenAdded($media));
 
         app(FileManipulator::class)->createDerivedFiles($media);
     }
@@ -68,7 +70,7 @@ class Filesystem
     {
         $mimeTypeHeader = ['ContentType' => File::getMimeType($file)];
 
-        $extraHeaders = config('medialibrary.remote.extra_headers');
+        $extraHeaders = Config::get('medialibrary.remote.extra_headers');
 
         return array_merge($mimeTypeHeader, $extraHeaders, $this->customRemoteHeaders, $mediaCustomHeaders);
     }
@@ -108,8 +110,7 @@ class Filesystem
 
         $responsiveImagesDirectory = $this->getMediaDirectory($media, 'responsiveImages');
 
-        collect([$mediaDirectory, $conversionsDirectory, $responsiveImagesDirectory])
-
+        with(new Collection([$mediaDirectory, $conversionsDirectory, $responsiveImagesDirectory]))
             ->each(function ($directory) use ($media) {
                 $this->filesystem->disk($media->disk)->deleteDirectory($directory);
             });

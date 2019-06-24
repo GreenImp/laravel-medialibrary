@@ -2,6 +2,7 @@
 
 namespace Spatie\MediaLibrary\Tests\Feature\FileAdder;
 
+use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\Tests\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Spatie\MediaLibrary\Exceptions\FileCannotBeAdded\UnknownType;
@@ -171,7 +172,7 @@ class IntegrationTest extends TestCase
     public function it_can_add_multiple_uploads_to_the_medialibrary_from_the_current_request()
     {
         $this->app['router']->get('/upload', function () {
-            $fileAdders = collect(
+            $fileAdders = new Collection(
                 $this->testModel
                     ->addMultipleMediaFromRequest(['file-1', 'file-2'])
             );
@@ -210,7 +211,7 @@ class IntegrationTest extends TestCase
     public function it_can_add_handle_file_keys_that_contain_an_array_to_the_medialibrary_from_the_current_request()
     {
         $this->app['router']->get('/upload', function () {
-            $fileAdders = collect(
+            $fileAdders = new Collection(
                 $this->testModel->addAllMediaFromRequest()
             );
 

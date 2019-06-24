@@ -3,6 +3,7 @@
 namespace Spatie\MediaLibrary\Conversion;
 
 use BadMethodCallException;
+use Config;
 use Spatie\Image\Manipulations;
 
 /** @mixin \Spatie\Image\Manipulations */
@@ -34,7 +35,7 @@ class Conversion
         $this->name = $name;
 
         $this->manipulations = (new Manipulations())
-            ->optimize(config('medialibrary.image_optimizers'))
+            ->optimize(Config::get('medialibrary.image_optimizers'))
             ->format('jpg');
     }
 

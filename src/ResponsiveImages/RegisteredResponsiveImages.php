@@ -2,6 +2,8 @@
 
 namespace Spatie\MediaLibrary\ResponsiveImages;
 
+use Config;
+use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\Models\Media;
 
 class RegisteredResponsiveImages
@@ -23,7 +25,7 @@ class RegisteredResponsiveImages
             ? 'medialibrary_original'
             : $conversionName;
 
-        $this->files = collect($media->responsive_images[$this->generatedFor]['urls'] ?? [])
+        $this->files = with(new Collection($media->responsive_images[$this->generatedFor]['urls'] ?? []))
             ->map(function (string $fileName) use ($media) {
                 return new ResponsiveImage($fileName, $media);
             })
@@ -50,7 +52,7 @@ class RegisteredResponsiveImages
             })
             ->implode(', ');
 
-        $shouldAddPlaceholderSvg = config('medialibrary.responsive_images.use_tiny_placeholders')
+        $shouldAddPlaceholderSvg = Config::get('medialibrary.responsive_images.use_tiny_placeholders')
             && $this->getPlaceholderSvg();
 
         if ($shouldAddPlaceholderSvg) {

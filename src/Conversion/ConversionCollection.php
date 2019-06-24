@@ -72,7 +72,7 @@ class ConversionCollection extends Collection
      */
     protected function addConversionsFromRelatedModel(Media $media)
     {
-        $modelName = Arr::get(Relation::morphMap(), $media->model_type, $media->model_type);
+        $modelName = $media->model_type;
 
         /** @var \Spatie\MediaLibrary\HasMedia\HasMedia $model */
         $model = new $modelName();
@@ -100,7 +100,7 @@ class ConversionCollection extends Collection
      */
     protected function addManipulationsFromDb(Media $media)
     {
-        collect($media->manipulations)->each(function ($manipulations, $conversionName) {
+        with(new Collection($media->manipulations))->each(function ($manipulations, $conversionName) {
             $this->addManipulationToConversion(new Manipulations([$manipulations]), $conversionName);
         });
     }
@@ -111,7 +111,9 @@ class ConversionCollection extends Collection
             return $this;
         }
 
-        return $this->filter->shouldBePerformedOn($collectionName);
+        return $this->filter(function($value, $key) use ($collectionName){
+            return $value->shouldBePerformedOn($collectionName);
+        });
     }
 
     /*
@@ -119,7 +121,9 @@ class ConversionCollection extends Collection
      */
     public function getQueuedConversions(string $collectionName = ''): self
     {
-        return $this->getConversions($collectionName)->filter->shouldBeQueued();
+        return $this->getConversions($collectionName)->filter(function($value, $key){
+            return $value->shouldBeQueued();
+        });
     }
 
     /*
@@ -132,7 +136,9 @@ class ConversionCollection extends Collection
         }))->addAsFirstManipulations($manipulations);
 
         if ($conversionName === '*') {
-            $this->each->addAsFirstManipulations(clone $manipulations);
+            $this->each(function($item, $key) use ($manipulations){
+                $item->addAsFirstManipulations(clone $manipulations);
+            });
         }
     }
 
@@ -141,7 +147,9 @@ class ConversionCollection extends Collection
      */
     public function getNonQueuedConversions(string $collectionName = ''): self
     {
-        return $this->getConversions($collectionName)->reject->shouldBeQueued();
+        return $this->getConversions($collectionName)->reject(function($value, $key){
+            return $value->shouldBeQueued();
+        });
     }
 
     /*

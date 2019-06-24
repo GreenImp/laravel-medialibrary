@@ -2,13 +2,15 @@
 
 namespace Spatie\MediaLibrary\Commands;
 
+use Config;
 use Illuminate\Console\Command;
 use Spatie\MediaLibrary\Models\Media;
 use Illuminate\Console\ConfirmableTrait;
 use Spatie\MediaLibrary\FileManipulator;
 use Spatie\MediaLibrary\MediaRepository;
 use Illuminate\Contracts\Filesystem\Factory;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Collection as DbCollection;
+use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\Conversion\Conversion;
 use Spatie\MediaLibrary\Exceptions\FileCannotBeAdded;
 use Spatie\MediaLibrary\Conversion\ConversionCollection;
@@ -80,7 +82,7 @@ class CleanCommand extends Command
         $this->info('All done!');
     }
 
-    public function getMediaItems(): Collection
+    public function getMediaItems(): DbCollection
     {
         $modelType = $this->argument('modelType');
         $collectionName = $this->argument('collectionName');
@@ -125,7 +127,7 @@ class CleanCommand extends Command
         $conversionPath = $this->basePathGenerator->getPathForConversions($media);
         $currentFilePaths = $this->fileSystem->disk($media->disk)->files($conversionPath);
 
-        collect($currentFilePaths)
+        with(new Collection($currentFilePaths))
             ->reject(function (string $currentFilePath) use ($conversionFilePaths) {
                 return $conversionFilePaths->contains(basename($currentFilePath));
             })
@@ -150,7 +152,7 @@ class CleanCommand extends Command
 
         $responsiveImagesGeneratedFor = array_keys($media->responsive_images);
 
-        collect($responsiveImagesGeneratedFor)
+        with(new Collection($responsiveImagesGeneratedFor))
             ->map(function (string $generatedFor) use ($media) {
                 return $media->responsiveImages($generatedFor);
             })
@@ -166,15 +168,15 @@ class CleanCommand extends Command
 
     protected function deleteOrphanedDirectories()
     {
-        $diskName = $this->argument('disk') ?: config('medialibrary.disk_name');
+        $diskName = $this->argument('disk') ?: Config::get('medialibrary.disk_name');
 
-        if (is_null(config("filesystems.disks.{$diskName}"))) {
+        if (is_null(Config::get("medialibrary.disks.{$diskName}"))) {
             throw FileCannotBeAdded::diskDoesNotExist($diskName);
         }
 
-        $mediaIds = collect($this->mediaRepository->all()->pluck('id')->toArray());
+        $mediaIds = new Collection($this->mediaRepository->all()->pluck('id')->toArray());
 
-        collect($this->fileSystem->disk($diskName)->directories())
+        with(new Collection($this->fileSystem->disk($diskName)->directories()))
             ->filter(function (string $directory) {
                 return is_numeric($directory);
             })

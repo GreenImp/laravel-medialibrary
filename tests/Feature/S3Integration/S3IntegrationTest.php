@@ -4,6 +4,7 @@ namespace Spatie\MediaLibrary\Tests\Feature\S3Integration;
 
 use Carbon\Carbon;
 use Aws\S3\S3Client;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\Tests\TestCase;
@@ -268,7 +269,7 @@ class S3IntegrationTest extends TestCase
 
     protected function cleanUpS3()
     {
-        collect(Storage::disk('s3_disk')->allDirectories(self::getS3BaseTestDirectory()))->each(function ($directory) {
+        with(new Collection(Storage::disk('s3_disk')->allDirectories(self::getS3BaseTestDirectory())))->each(function ($directory) {
             Storage::disk('s3_disk')->deleteDirectory($directory);
         });
     }

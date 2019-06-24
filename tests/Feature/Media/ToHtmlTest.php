@@ -2,6 +2,7 @@
 
 namespace Spatie\MediaLibrary\Models\Media;
 
+use Config;
 use Spatie\MediaLibrary\Models\Media;
 use Spatie\Snapshots\MatchesSnapshots;
 use Spatie\MediaLibrary\Tests\TestCase;
@@ -109,7 +110,7 @@ class ToHtmlTest extends TestCase
     /** @test */
     public function it_will_not_rendering_extra_javascript_or_including_base64_svg_when_tiny_placeholders_are_turned_off()
     {
-        config()->set('medialibrary.responsive_images.use_tiny_placeholders', false);
+        Config::set('medialibrary.responsive_images.use_tiny_placeholders', false);
 
         $media = $this->testModelWithConversion
             ->addMedia($this->getTestJpg())

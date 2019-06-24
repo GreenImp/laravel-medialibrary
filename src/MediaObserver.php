@@ -3,7 +3,7 @@
 namespace Spatie\MediaLibrary;
 
 use Spatie\MediaLibrary\Models\Media;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Spatie\MediaLibrary\Filesystem\Filesystem;
 
 class MediaObserver
@@ -40,8 +40,8 @@ class MediaObserver
 
     public function deleted(Media $media)
     {
-        if (in_array(SoftDeletes::class, class_uses_recursive($media))) {
-            if (! $media->isForceDeleting()) {
+        if (in_array(SoftDeletingTrait::class, class_uses_recursive(get_class($media)))) {
+            if (! $media->forceDeleting) {
                 return;
             }
         }

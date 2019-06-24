@@ -20,11 +20,11 @@ class Image extends BaseGenerator
 
     public function supportedExtensions(): Collection
     {
-        return collect(['png', 'jpg', 'jpeg', 'gif']);
+        return new Collection(['png', 'jpg', 'jpeg', 'gif']);
     }
 
     public function supportedMimeTypes(): Collection
     {
-        return collect(['image/jpeg', 'image/gif', 'image/png']);
+        return new Collection(['image/jpeg', 'image/gif', 'image/png']);
     }
 }

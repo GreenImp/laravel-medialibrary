@@ -25,12 +25,12 @@ class MediaStream implements Responsable
     {
         $this->zipName = $zipName;
 
-        $this->mediaItems = collect();
+        $this->mediaItems = new Collection();
     }
 
     public function addMedia(...$mediaItems)
     {
-        collect($mediaItems)
+        with(new Collection($mediaItems))
             ->flatMap(function ($item) {
                 if ($item instanceof Media) {
                     return [$item];

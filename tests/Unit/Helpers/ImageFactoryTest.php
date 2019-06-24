@@ -2,6 +2,7 @@
 
 namespace Spatie\MediaLibrary\Tests\Unit\Helpers;
 
+use Config;
 use ReflectionClass;
 use Spatie\MediaLibrary\Tests\TestCase;
 use Spatie\MediaLibrary\Helpers\ImageFactory;
@@ -11,7 +12,7 @@ class ImageFactoryTest extends TestCase
     /** @test */
     public function loading_an_image_uses_the_correct_driver()
     {
-        config(['medialibrary.image_driver' => 'imagick']);
+        Config::set('medialibrary.image_driver', 'imagick');
 
         $image = ImageFactory::load($this->getTestJpg());
 

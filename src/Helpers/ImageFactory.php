@@ -2,6 +2,7 @@
 
 namespace Spatie\MediaLibrary\Helpers;
 
+use Config;
 use Spatie\Image\Image;
 
 class ImageFactory
@@ -9,6 +10,6 @@ class ImageFactory
     public static function load(string $path): Image
     {
         return Image::load($path)
-            ->useImageDriver(config('medialibrary.image_driver'));
+            ->useImageDriver(Config::get('medialibrary.image_driver'));
     }
 }
