@@ -6,7 +6,7 @@ use Exception;
 
 class UrlCannotBeDetermined extends Exception
 {
-    public static function mediaNotPubliclyAvailable(string $storagePath, string $publicPath)
+    public static function mediaNotPubliclyAvailable($storagePath, $publicPath)
     {
         return new static("Storage path `{$storagePath}` is not part of public path `{$publicPath}`");
     }

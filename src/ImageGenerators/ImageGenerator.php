@@ -17,11 +17,11 @@ interface ImageGenerator
      *
      * @return string
      */
-    public function convert(string $path, Conversion $conversion = null) : string;
+    public function convert($path, Conversion $conversion = null);
 
-    public function canHandleMime(string $mime = ''): bool;
+    public function canHandleMime($mime = '');
 
-    public function canHandleExtension(string $extension = ''): bool;
+    public function canHandleExtension($extension = '');
 
-    public function getType(): string;
+    public function getType();
 }

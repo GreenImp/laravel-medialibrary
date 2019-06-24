@@ -7,7 +7,7 @@ use Spatie\MediaLibrary\Helpers\ImageFactory;
 
 class FileSizeOptimizedWidthCalculator implements WidthCalculator
 {
-    public function calculateWidthsFromFile(string $imagePath): Collection
+    public function calculateWidthsFromFile($imagePath)
     {
         $image = ImageFactory::load($imagePath);
 
@@ -18,7 +18,7 @@ class FileSizeOptimizedWidthCalculator implements WidthCalculator
         return $this->calculateWidths($fileSize, $width, $height);
     }
 
-    public function calculateWidths(int $fileSize, int $width, int $height): Collection
+    public function calculateWidths(int $fileSize, int $width, int $height)
     {
         $targetWidths = new Collection();
 
@@ -43,7 +43,7 @@ class FileSizeOptimizedWidthCalculator implements WidthCalculator
         }
     }
 
-    protected function finishedCalculating(int $predictedFileSize, int $newWidth): bool
+    protected function finishedCalculating(int $predictedFileSize, int $newWidth)
     {
         if ($newWidth < 20) {
             return true;

@@ -13,7 +13,7 @@ class ConversionTest extends TestCase
     /** @var \Spatie\MediaLibrary\Conversion\Conversion */
     protected $conversion;
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 
@@ -129,7 +129,7 @@ class ConversionTest extends TestCase
     /** @test */
     public function manipulations_can_be_set_using_an_instance_of_manipulations()
     {
-        $this->conversion->setManipulations((new Manipulations())->width(10));
+        $this->conversion->setManipulations(with(new Manipulations())->width(10));
 
         $manipulations = $this->conversion
             ->getManipulations()

@@ -25,7 +25,7 @@ class Filesystem
         $this->filesystem = $filesystem;
     }
 
-    public function add(string $file, Media $media, ?string $targetFileName = null)
+    public function add($file, Media $media, $targetFileName = null)
     {
         $this->copyToMediaLibrary($file, $media, null, $targetFileName);
 
@@ -34,7 +34,7 @@ class Filesystem
         app(FileManipulator::class)->createDerivedFiles($media);
     }
 
-    public function copyToMediaLibrary(string $pathToFile, Media $media, ?string $type = null, ?string $targetFileName = null)
+    public function copyToMediaLibrary($pathToFile, Media $media, $type = null, $targetFileName = null)
     {
         $destinationFileName = $targetFileName ?: pathinfo($pathToFile, PATHINFO_BASENAME);
 
@@ -66,7 +66,7 @@ class Filesystem
         $this->customRemoteHeaders = $customRemoteHeaders;
     }
 
-    public function getRemoteHeadersForFile(string $file, array $mediaCustomHeaders = []) : array
+    public function getRemoteHeadersForFile($file, array $mediaCustomHeaders = [])
     {
         $mimeTypeHeader = ['ContentType' => File::getMimeType($file)];
 
@@ -82,7 +82,7 @@ class Filesystem
         return $this->filesystem->disk($media->disk)->readStream($sourceFile);
     }
 
-    public function copyFromMediaLibrary(Media $media, string $targetFile): string
+    public function copyFromMediaLibrary(Media $media, $targetFile)
     {
         touch($targetFile);
 
@@ -116,12 +116,12 @@ class Filesystem
             });
     }
 
-    public function removeFile(Media $media, string $path)
+    public function removeFile(Media $media, $path)
     {
         $this->filesystem->disk($media->disk)->delete($path);
     }
 
-    public function removeResponsiveImages(Media $media, string $conversionName = 'medialibrary_original')
+    public function removeResponsiveImages(Media $media, $conversionName = 'medialibrary_original')
     {
         $responsiveImagesDirectory = $this->getResponsiveImagesDirectory($media);
 
@@ -129,7 +129,7 @@ class Filesystem
 
         $responsiveImagePaths = array_filter(
             $allFilePaths,
-            function (string $path) use ($conversionName) {
+            function ($path) use ($conversionName) {
                 return str_contains($path, $conversionName);
             }
         );
@@ -183,7 +183,7 @@ class Filesystem
         }
     }
 
-    public function getMediaDirectory(Media $media, ?string $type = null) : string
+    public function getMediaDirectory(Media $media, $type = null)
     {
         $pathGenerator = PathGeneratorFactory::create();
 
@@ -206,12 +206,12 @@ class Filesystem
         return $directory;
     }
 
-    public function getConversionDirectory(Media $media) : string
+    public function getConversionDirectory(Media $media)
     {
         return $this->getMediaDirectory($media, 'conversions');
     }
 
-    public function getResponsiveImagesDirectory(Media $media) : string
+    public function getResponsiveImagesDirectory(Media $media)
     {
         return $this->getMediaDirectory($media, 'responsiveImages');
     }

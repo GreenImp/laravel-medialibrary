@@ -89,14 +89,14 @@ class FileAdder
         return $this;
     }
 
-    /*
+    /**
      * Set the file that needs to be imported.
      *
      * @param string|\Symfony\Component\HttpFoundation\File\UploadedFile $file
      *
      * @return $this
      */
-    public function setFile($file): self
+    public function setFile($file)
     {
         $this->file = $file;
 
@@ -127,71 +127,71 @@ class FileAdder
         throw UnknownType::create();
     }
 
-    public function preservingOriginal(): self
+    public function preservingOriginal()
     {
         $this->preserveOriginal = true;
 
         return $this;
     }
 
-    public function usingName(string $name): self
+    public function usingName($name)
     {
         return $this->setName($name);
     }
 
-    public function setName(string $name): self
+    public function setName($name)
     {
         $this->mediaName = $name;
 
         return $this;
     }
 
-    public function usingFileName(string $fileName): self
+    public function usingFileName($fileName)
     {
         return $this->setFileName($fileName);
     }
 
-    public function setFileName(string $fileName): self
+    public function setFileName($fileName)
     {
         $this->fileName = $fileName;
 
         return $this;
     }
 
-    public function withCustomProperties(array $customProperties): self
+    public function withCustomProperties(array $customProperties)
     {
         $this->customProperties = $customProperties;
 
         return $this;
     }
 
-    public function withManipulations(array $manipulations): self
+    public function withManipulations(array $manipulations)
     {
         $this->manipulations = $manipulations;
 
         return $this;
     }
 
-    public function withProperties(array $properties): self
+    public function withProperties(array $properties)
     {
         $this->properties = $properties;
 
         return $this;
     }
 
-    public function withAttributes(array $properties): self
+    public function withAttributes(array $properties)
     {
         return $this->withProperties($properties);
     }
 
-    public function withResponsiveImages(): self
+    public function withResponsiveImages()
     {
         $this->generateResponsiveImages = true;
 
         return $this;
     }
 
-    public function addCustomHeaders(array $customRemoteHeaders): self
+    public function addCustomHeaders(array $customRemoteHeaders)
     {
         $this->customHeaders = $customRemoteHeaders;
 
@@ -200,12 +200,12 @@ class FileAdder
         return $this;
     }
 
-    public function toMediaCollectionOnCloudDisk(string $collectionName = 'default'): Media
+    public function toMediaCollectionOnCloudDisk($collectionName = 'default')
     {
         return $this->toMediaCollection($collectionName, 's3');
     }
 
-    public function toMediaCollection(string $collectionName = 'default', string $diskName = ''): Media
+    public function toMediaCollection($collectionName = 'default', $diskName = '')
     {
         if (! is_file($this->pathToFile)) {
             throw FileDoesNotExist::create($this->pathToFile);
@@ -257,7 +257,7 @@ class FileAdder
         return $media;
     }
 
-    protected function determineDiskName(string $diskName, string $collectionName): string
+    protected function determineDiskName($diskName, $collectionName)
     {
         if ($diskName !== '') {
             return $diskName;
@@ -274,12 +274,12 @@ class FileAdder
         return Config::get('medialibrary.disk_name');
     }
 
-    public function defaultSanitizer(string $fileName): string
+    public function defaultSanitizer($fileName)
     {
         return str_replace(['#', '/', '\\', ' '], '-', $fileName);
     }
 
-    public function sanitizingFileName(callable $fileNameSanitizer): self
+    public function sanitizingFileName(callable $fileNameSanitizer)
     {
         $this->fileNameSanitizer = $fileNameSanitizer;
 
@@ -305,7 +305,7 @@ class FileAdder
         $this->processMediaItem($this->subject, $media, $this);
     }
 
-    protected function processMediaItem(HasMedia $model, Media $media, self $fileAdder)
+    protected function processMediaItem(HasMedia $model, Media $media, FileAdder $fileAdder)
     {
         $this->guardAgainstDisallowedFileAdditions($media, $model);
 
@@ -335,7 +335,7 @@ class FileAdder
         }
     }
 
-    protected function getMediaCollection(string $collectionName): ?MediaCollection
+    protected function getMediaCollection($collectionName)
     {
         $this->subject->registerMediaCollections();
 
@@ -353,7 +353,7 @@ class FileAdder
             return;
         }
 
-        if (! ($collection->acceptsFile)($file, $this->subject)) {
+        if (! call_user_func($collection->acceptsFile, $file, $this->subject)) {
             throw FileUnacceptableForCollection::create($file, $collection, $this->subject);
         }
     }

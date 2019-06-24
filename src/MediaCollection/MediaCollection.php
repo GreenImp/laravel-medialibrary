@@ -19,7 +19,7 @@ class MediaCollection
     /** @var bool */
     public $singleFile = false;
 
-    public function __construct(string $name)
+    public function __construct($name)
     {
         $this->name = $name;
 
@@ -36,21 +36,21 @@ class MediaCollection
         return new static($name);
     }
 
-    public function useDisk(string $diskName): self
+    public function useDisk($diskName)
     {
         $this->diskName = $diskName;
 
         return $this;
     }
 
-    public function acceptsFile(callable $acceptsFile): self
+    public function acceptsFile(callable $acceptsFile)
     {
         $this->acceptsFile = $acceptsFile;
 
         return $this;
     }
 
-    public function singleFile(): self
+    public function singleFile()
     {
         $this->singleFile = true;
 

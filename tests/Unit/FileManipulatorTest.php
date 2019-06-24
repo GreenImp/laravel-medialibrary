@@ -13,7 +13,7 @@ class FileManipulatorTest extends TestCase
     /** @var \Spatie\MediaLibrary\Conversion\Conversion */
     protected $conversion;
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 

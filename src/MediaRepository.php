@@ -29,7 +29,7 @@ class MediaRepository
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCollection(HasMedia $model, string $collectionName, $filter = []): Collection
+    public function getCollection(HasMedia $model, $collectionName, $filter = [])
     {
         return $this->applyFilterToMediaCollection($model->loadMedia($collectionName), $filter);
     }
@@ -42,7 +42,7 @@ class MediaRepository
      *
      * @return \Illuminate\Support\Collection
      */
-    protected function applyFilterToMediaCollection(Collection $media, $filter): Collection
+    protected function applyFilterToMediaCollection(Collection $media, $filter)
     {
         if (is_array($filter)) {
             $filter = $this->getDefaultFilterFunction($filter);
@@ -51,22 +51,22 @@ class MediaRepository
         return $media->filter($filter);
     }
 
-    public function all(): DbCollection
+    public function all()
     {
         return $this->model->all();
     }
 
-    public function getByModelType(string $modelType): DbCollection
+    public function getByModelType($modelType)
     {
         return $this->model->where('model_type', $modelType)->get();
     }
 
-    public function getByIds(array $ids): DbCollection
+    public function getByIds(array $ids)
     {
         return $this->model->whereIn('id', $ids)->get();
     }
 
-    public function getByModelTypeAndCollectionName(string $modelType, string $collectionName): DbCollection
+    public function getByModelTypeAndCollectionName($modelType, $collectionName)
     {
         return $this->model
             ->where('model_type', $modelType)
@@ -74,7 +74,7 @@ class MediaRepository
             ->get();
     }
 
-    public function getByCollectionName(string $collectionName): DbCollection
+    public function getByCollectionName($collectionName)
     {
         return $this->model
             ->where('collection_name', $collectionName)
@@ -88,7 +88,7 @@ class MediaRepository
      *
      * @return \Closure
      */
-    protected function getDefaultFilterFunction(array $filters): Closure
+    protected function getDefaultFilterFunction(array $filters)
     {
         return function (Media $media) use ($filters) {
             foreach ($filters as $property => $value) {

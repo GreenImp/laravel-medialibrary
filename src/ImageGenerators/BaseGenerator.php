@@ -7,7 +7,7 @@ use Spatie\MediaLibrary\Models\Media;
 
 abstract class BaseGenerator implements ImageGenerator
 {
-    public function canConvert(Media $media): bool
+    public function canConvert(Media $media)
     {
         if (! $this->requirementsAreInstalled()) {
             return false;
@@ -24,24 +24,24 @@ abstract class BaseGenerator implements ImageGenerator
         return false;
     }
 
-    public function canHandleMime(string $mime = ''): bool
+    public function canHandleMime($mime = '')
     {
         return $this->supportedMimetypes()->contains($mime);
     }
 
-    public function canHandleExtension(string $extension = ''): bool
+    public function canHandleExtension($extension = '')
     {
         return $this->supportedExtensions()->contains($extension);
     }
 
-    public function getType(): string
+    public function getType()
     {
         return strtolower(class_basename(static::class));
     }
 
-    abstract public function requirementsAreInstalled(): bool;
+    abstract public function requirementsAreInstalled();
 
-    abstract public function supportedExtensions(): Collection;
+    abstract public function supportedExtensions();
 
-    abstract public function supportedMimetypes(): Collection;
+    abstract public function supportedMimetypes();
 }

@@ -15,31 +15,21 @@ class MediaLibraryServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        $this->publishes([
-            __DIR__.'/../config/medialibrary.php' => config_path('medialibrary.php'),
-        ], 'config');
+        $this->package('spatie/medialibrary', null, __DIR__.'/../');
 
-        if (! class_exists('CreateMediaTable')) {
+        /*if (! class_exists('CreateMediaTable')) {
             $this->publishes([
                 __DIR__.'/../database/migrations/create_media_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_create_media_table.php'),
             ], 'migrations');
-        }
-
-        $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/medialibrary'),
-        ], 'views');
+        }*/
 
         $mediaClass = Config::get('medialibrary.media_model');
 
         $mediaClass::observe(new MediaObserver());
-
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'medialibrary');
     }
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/medialibrary.php', 'medialibrary');
-
         $this->app->singleton(MediaRepository::class, function () {
             $mediaClass = Config::get('medialibrary.media_model');
 
@@ -68,6 +58,61 @@ class MediaLibraryServiceProvider extends ServiceProvider
     {
         if (! Config::get('medialibrary.disk_name')) {
             Config::set(['medialibrary.disk_name' => Config::get('medialibrary.default_filesystem')]);
+        }
+    }
+
+    /**
+     * Register the package's component namespaces.
+     *
+     * @param  string  $package
+     * @param  string  $namespace
+     * @param  string  $path
+     * @return void
+     */
+    public function package($package, $namespace = null, $path = null)
+    {
+        $namespace = $this->getPackageNamespace($package, $namespace);
+
+        // In this method we will register the configuration package for the package
+        // so that the configuration options cleanly cascade into the application
+        // folder to make the developers lives much easier in maintaining them.
+        $path = $path ?: $this->guessPackagePath();
+
+        $config = $path.'/config';
+
+        if ($this->app['files']->isDirectory($config))
+        {
+            $this->app['config']->package($package, $config, $namespace);
+        }
+
+        // Next we will check for any "language" components. If language files exist
+        // we will register them with this given package's namespace so that they
+        // may be accessed using the translation facilities of the application.
+        $lang = $path.'/lang';
+
+        if ($this->app['files']->isDirectory($lang))
+        {
+            $this->app['translator']->addNamespace($namespace, $lang);
+        }
+
+        // Next, we will see if the application view folder contains a folder for the
+        // package and namespace. If it does, we'll give that folder precedence on
+        // the loader list for the views so the package views can be overridden.
+        $appView = $this->getAppViewPath($package);
+
+        if ($this->app['files']->isDirectory($appView))
+        {
+            $this->app['view']->addNamespace($namespace, $appView);
+        }
+
+        // Finally we will register the view namespace so that we can access each of
+        // the views available in this package. We use a standard convention when
+        // registering the paths to every package's views and other components.
+        $view = $path.'/resources/views';
+
+        if ($this->app['files']->isDirectory($view))
+        {
+            $this->app['view']->addNamespace($namespace, $view);
         }
     }
 }

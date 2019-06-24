@@ -39,7 +39,7 @@ interface HasMedia
      *
      * @return bool
      */
-    public function hasMedia(string $collectionMedia = '') : bool;
+    public function hasMedia($collectionMedia = '');
 
     /**
      * Get media collection by its collectionName.
@@ -49,14 +49,14 @@ interface HasMedia
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getMedia(string $collectionName = 'default', $filters = []);
+    public function getMedia($collectionName = 'default', $filters = []);
 
     /**
      * Remove all media in the given collection.
      *
      * @param string $collectionName
      */
-    public function clearMediaCollection(string $collectionName = 'default');
+    public function clearMediaCollection($collectionName = 'default');
 
     /**
      * Remove all media in the given collection except some.
@@ -66,7 +66,7 @@ interface HasMedia
      *
      * @return string $collectionName
      */
-    public function clearMediaCollectionExcept(string $collectionName = 'default', $excludedMedia = []);
+    public function clearMediaCollectionExcept($collectionName = 'default', $excludedMedia = []);
 
     /**
      * Determines if the media files should be preserved when the media object gets deleted.
@@ -82,24 +82,24 @@ interface HasMedia
      *
      * @return mixed
      */
-    public function loadMedia(string $collectionName);
+    public function loadMedia($collectionName);
 
-    /*
+    /**
      * Add a conversion.
      */
-    public function addMediaConversion(string $name): Conversion;
+    public function addMediaConversion($name);
 
-    /*
+    /**
      * Register the media conversions.
      */
     public function registerMediaConversions(Media $media = null);
 
-    /*
+    /**
      * Register the media collections.
      */
     public function registerMediaCollections();
 
-    /*
+    /**
      * Register the media conversions and conversions set in media collections.
      */
     public function registerAllMediaConversions();

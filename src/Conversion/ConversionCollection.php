@@ -51,7 +51,7 @@ class ConversionCollection extends Collection
      *
      * @throws \Spatie\MediaLibrary\Exceptions\InvalidConversion
      */
-    public function getByName(string $name): Conversion
+    public function getByName($name)
     {
         $conversion = $this->first(function (Conversion $conversion) use ($name) {
             return $conversion->getName() === $name;
@@ -105,7 +105,7 @@ class ConversionCollection extends Collection
         });
     }
 
-    public function getConversions(string $collectionName = ''): self
+    public function getConversions($collectionName = '')
     {
         if ($collectionName === '') {
             return $this;
@@ -119,7 +119,7 @@ class ConversionCollection extends Collection
     /*
      * Get all the conversions in the collection that should be queued.
      */
-    public function getQueuedConversions(string $collectionName = ''): self
+    public function getQueuedConversions($collectionName = '')
     {
         return $this->getConversions($collectionName)->filter(function($value, $key){
             return $value->shouldBeQueued();
@@ -129,7 +129,7 @@ class ConversionCollection extends Collection
     /*
      * Add the given manipulation to the conversion with the given name.
      */
-    protected function addManipulationToConversion(Manipulations $manipulations, string $conversionName)
+    protected function addManipulationToConversion(Manipulations $manipulations, $conversionName)
     {
         optional($this->first(function (Conversion $conversion) use ($conversionName) {
             return $conversion->getName() === $conversionName;
@@ -145,7 +145,7 @@ class ConversionCollection extends Collection
     /*
      * Get all the conversions in the collection that should not be queued.
      */
-    public function getNonQueuedConversions(string $collectionName = ''): self
+    public function getNonQueuedConversions($collectionName = '')
     {
         return $this->getConversions($collectionName)->reject(function($value, $key){
             return $value->shouldBeQueued();
@@ -155,7 +155,7 @@ class ConversionCollection extends Collection
     /*
      * Return the list of conversion files.
      */
-    public function getConversionsFiles(string $collectionName = ''): self
+    public function getConversionsFiles($collectionName = '')
     {
         $fileName = pathinfo($this->media->file_name, PATHINFO_FILENAME);
 

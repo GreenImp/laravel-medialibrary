@@ -77,9 +77,9 @@ class RegenerateCommand extends Command
         $this->info('All done!');
     }
 
-    public function getMediaToBeRegenerated(): Collection
+    public function getMediaToBeRegenerated()
     {
-        $modelType = $this->argument('modelType') ?? '';
+        $modelType = !empty($this->argument('modelType')) ? $this->argument('modelType') : '';
         $mediaIds = $this->getMediaIds();
 
         if ($modelType === '' && count($mediaIds) === 0) {
@@ -93,7 +93,7 @@ class RegenerateCommand extends Command
         return $this->mediaRepository->getByIds($mediaIds);
     }
 
-    protected function getMediaIds(): array
+    protected function getMediaIds()
     {
         $mediaIds = $this->option('ids');
 

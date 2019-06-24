@@ -22,15 +22,15 @@ class FileAdderFactory
             ->setFile($file);
     }
 
-    public static function createFromRequest(Model $subject, string $key): FileAdder
+    public static function createFromRequest(Model $subject, $key)
     {
         return static::createMultipleFromRequest($subject, [$key])->first();
     }
 
-    public static function createMultipleFromRequest(Model $subject, array $keys = []): Collection
+    public static function createMultipleFromRequest(Model $subject, array $keys = [])
     {
         return with(new Collection($keys))
-            ->map(function (string $key) use ($subject) {
+            ->map(function ($key) use ($subject) {
                 if (! Input::hasFile($key)) {
                     throw RequestDoesNotHaveFile::create($key);
                 }
@@ -48,7 +48,7 @@ class FileAdderFactory
             ->flatten();
     }
 
-    public static function createAllFromRequest(Model $subject): Collection
+    public static function createAllFromRequest(Model $subject)
     {
         $fileKeys = array_keys(Input::file());
 

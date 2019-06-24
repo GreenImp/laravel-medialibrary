@@ -31,7 +31,7 @@ class ConversionFileExtensionTest extends TestCase
         $this->assertExtensionEquals('jpg', $media->getUrl('keep_original_format'));
     }
 
-    private function assertExtensionEquals(string $expectedExtension, string $file)
+    private function assertExtensionEquals($expectedExtension, $file)
     {
         $actualExtension = pathinfo($file, PATHINFO_EXTENSION);
 

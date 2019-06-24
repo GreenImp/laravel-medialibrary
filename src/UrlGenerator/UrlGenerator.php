@@ -14,21 +14,21 @@ interface UrlGenerator
      *
      * @return string
      */
-    public function getUrl(): string;
+    public function getUrl();
 
     /**
      * @param \Spatie\MediaLibrary\Models\Media $media
      *
      * @return \Spatie\MediaLibrary\UrlGenerator\UrlGenerator
      */
-    public function setMedia(Media $media): self;
+    public function setMedia(Media $media);
 
     /**
      * @param \Spatie\MediaLibrary\Conversion\Conversion $conversion
      *
      * @return \Spatie\MediaLibrary\UrlGenerator\UrlGenerator
      */
-    public function setConversion(Conversion $conversion): self;
+    public function setConversion(Conversion $conversion);
 
     /**
      * Set the path generator class.
@@ -37,7 +37,7 @@ interface UrlGenerator
      *
      * @return \Spatie\MediaLibrary\UrlGenerator\UrlGenerator
      */
-    public function setPathGenerator(PathGenerator $pathGenerator): self;
+    public function setPathGenerator(PathGenerator $pathGenerator);
 
     /**
      * Get the temporary url for a media item.
@@ -47,12 +47,12 @@ interface UrlGenerator
      *
      * @return string
      */
-    public function getTemporaryUrl(DateTimeInterface $expiration, array $options = []): string;
+    public function getTemporaryUrl(DateTimeInterface $expiration, array $options = []);
 
     /**
      * Get the url to the directory containing responsive images.
      *
      * @return string
      */
-    public function getResponsiveImagesDirectoryUrl(): string;
+    public function getResponsiveImagesDirectoryUrl();
 }

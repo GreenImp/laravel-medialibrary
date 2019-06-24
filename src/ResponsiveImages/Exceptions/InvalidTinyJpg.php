@@ -7,12 +7,12 @@ use Spatie\MediaLibrary\Helpers\File;
 
 class InvalidTinyJpg extends Exception
 {
-    public static function doesNotExist(string $tinyImageDestinationPath)
+    public static function doesNotExist($tinyImageDestinationPath)
     {
         return new static("The expected tiny jpg at `{$tinyImageDestinationPath}` does not exist");
     }
 
-    public static function hasWrongMimeType(string $tinyImageDestinationPath)
+    public static function hasWrongMimeType($tinyImageDestinationPath)
     {
         $foundMimeType = File::getMimeType($tinyImageDestinationPath);
 

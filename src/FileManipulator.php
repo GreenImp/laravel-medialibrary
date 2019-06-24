@@ -117,7 +117,7 @@ class FileManipulator
         $temporaryDirectory->delete();
     }
 
-    public function performManipulations(Media $media, Conversion $conversion, string $imageFile): string
+    public function performManipulations(Media $media, Conversion $conversion, $imageFile)
     {
         if ($conversion->getManipulations()->isEmpty()) {
             return $imageFile;
@@ -163,7 +163,7 @@ class FileManipulator
     public function determineImageGenerator(Media $media)
     {
         return $media->getImageGenerators()
-            ->map(function (string $imageGeneratorClassName) {
+            ->map(function ($imageGeneratorClassName) {
                 return app($imageGeneratorClassName);
             })
             ->first(function (ImageGenerator $imageGenerator) use ($media) {

@@ -14,7 +14,7 @@ class CleanConversionsTest extends TestCase
     /** @var array */
     protected $media;
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 

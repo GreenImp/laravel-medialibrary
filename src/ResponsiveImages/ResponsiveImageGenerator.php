@@ -59,7 +59,7 @@ class ResponsiveImageGenerator
         $temporaryDirectory->delete();
     }
 
-    public function generateResponsiveImagesForConversion(Media $media, Conversion $conversion, string $baseImage)
+    public function generateResponsiveImagesForConversion(Media $media, Conversion $conversion, $baseImage)
     {
         $temporaryDirectory = TemporaryDirectory::create();
 
@@ -76,8 +76,8 @@ class ResponsiveImageGenerator
 
     public function generateResponsiveImage(
         Media $media,
-        string $baseImage,
-        string $conversionName,
+        $baseImage,
+        $conversionName,
         int $targetWidth,
         BaseTemporaryDirectory $temporaryDirectory
     ) {
@@ -103,7 +103,7 @@ class ResponsiveImageGenerator
         ResponsiveImage::register($media, $finalImageFileName, $conversionName);
     }
 
-    public function generateTinyJpg(Media $media, string $originalImagePath, string $conversionName, BaseTemporaryDirectory $temporaryDirectory)
+    public function generateTinyJpg(Media $media, $originalImagePath, $conversionName, BaseTemporaryDirectory $temporaryDirectory)
     {
         $tempDestination = $temporaryDirectory->path('tiny.jpg');
 
@@ -132,7 +132,7 @@ class ResponsiveImageGenerator
         ResponsiveImage::registerTinySvg($media, $base64Svg, $conversionName);
     }
 
-    protected function appendToFileName(string $filePath, string $suffix): string
+    protected function appendToFileName($filePath, $suffix)
     {
         $baseName = pathinfo($filePath, PATHINFO_FILENAME);
 
@@ -141,7 +141,7 @@ class ResponsiveImageGenerator
         return $baseName.$suffix.'.'.$extension;
     }
 
-    protected function guardAgainstInvalidTinyPlaceHolder(string $tinyPlaceholderPath)
+    protected function guardAgainstInvalidTinyPlaceHolder($tinyPlaceholderPath)
     {
         if (! file_exists($tinyPlaceholderPath)) {
             throw InvalidTinyJpg::doesNotExist($tinyPlaceholderPath);
@@ -154,7 +154,7 @@ class ResponsiveImageGenerator
         }
     }
 
-    protected function cleanResponsiveImages(Media $media, string $conversionName = 'medialibrary_original') : Media
+    protected function cleanResponsiveImages(Media $media, $conversionName = 'medialibrary_original')
     {
         $responsiveImages = $media->responsive_images;
         $responsiveImages[$conversionName]['urls'] = [];

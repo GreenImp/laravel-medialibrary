@@ -15,7 +15,7 @@ class LocalUrlGenerator extends BaseUrlGenerator
      *
      * @throws \Spatie\MediaLibrary\Exceptions\UrlCannotBeDetermined
      */
-    public function getUrl(): string
+    public function getUrl()
     {
         $url = $this->getBaseMediaDirectoryUrl().'/'.$this->getPathRelativeToRoot();
 
@@ -34,7 +34,7 @@ class LocalUrlGenerator extends BaseUrlGenerator
      *
      * @throws \Spatie\MediaLibrary\Exceptions\UrlCannotBeDetermined
      */
-    public function getTemporaryUrl(DateTimeInterface $expiration, array $options = []): string
+    public function getTemporaryUrl(DateTimeInterface $expiration, array $options = [])
     {
         throw UrlCannotBeDetermined::filesystemDoesNotSupportTemporaryUrls();
     }
@@ -42,12 +42,12 @@ class LocalUrlGenerator extends BaseUrlGenerator
     /*
      * Get the path for the profile of a media item.
      */
-    public function getPath(): string
+    public function getPath()
     {
         return $this->getStoragePath().'/'.$this->getPathRelativeToRoot();
     }
 
-    protected function getBaseMediaDirectoryUrl(): string
+    protected function getBaseMediaDirectoryUrl()
     {
         if ($diskUrl = Config::get("medialibrary.disks.{$this->media->disk}.url")) {
             return str_replace(url('/'), '', $diskUrl);
@@ -63,7 +63,7 @@ class LocalUrlGenerator extends BaseUrlGenerator
     /*
      * Get the directory where all files of the media item are stored.
      */
-    protected function getBaseMediaDirectory(): string
+    protected function getBaseMediaDirectory()
     {
         return str_replace(public_path(), '', $this->getStoragePath());
     }
@@ -71,14 +71,14 @@ class LocalUrlGenerator extends BaseUrlGenerator
     /*
      * Get the path where the whole medialibrary is stored.
      */
-    protected function getStoragePath() : string
+    protected function getStoragePath()
     {
         $diskRootPath = Config::get("medialibrary.disks.{$this->media->disk}.root");
 
         return realpath($diskRootPath);
     }
 
-    protected function makeCompatibleForNonUnixHosts(string $url): string
+    protected function makeCompatibleForNonUnixHosts($url)
     {
         if (DIRECTORY_SEPARATOR != '/') {
             $url = str_replace(DIRECTORY_SEPARATOR, '/', $url);
@@ -92,7 +92,7 @@ class LocalUrlGenerator extends BaseUrlGenerator
      *
      * @return string
      */
-    public function getResponsiveImagesDirectoryUrl(): string
+    public function getResponsiveImagesDirectoryUrl()
     {
         return url($this->getBaseMediaDirectoryUrl().'/'.$this->pathGenerator->getPathForResponsiveImages($this->media)).'/';
     }

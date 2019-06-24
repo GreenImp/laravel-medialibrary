@@ -16,12 +16,12 @@ class MediaStream implements Responsable
     /** Illuminate\Support\Collection */
     protected $mediaItems;
 
-    public static function create(string $zipName)
+    public static function create($zipName)
     {
         return new static($zipName);
     }
 
-    public function __construct(string $zipName)
+    public function __construct($zipName)
     {
         $this->zipName = $zipName;
 
@@ -53,7 +53,7 @@ class MediaStream implements Responsable
         return $this;
     }
 
-    public function getMediaItems(): Collection
+    public function getMediaItems()
     {
         return $this->mediaItems;
     }
@@ -75,7 +75,7 @@ class MediaStream implements Responsable
         });
     }
 
-    protected function getZipStreamContents(): Collection
+    protected function getZipStreamContents()
     {
         return $this->mediaItems->map(function (Media $media, $mediaItemIndex) {
             return [
@@ -85,7 +85,7 @@ class MediaStream implements Responsable
         });
     }
 
-    protected function getFileNameWithSuffix(Collection $mediaItems, int $currentIndex): string
+    protected function getFileNameWithSuffix(Collection $mediaItems, $currentIndex)
     {
         $fileNameCount = 0;
 

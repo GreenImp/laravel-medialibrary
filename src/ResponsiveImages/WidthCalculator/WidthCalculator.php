@@ -6,7 +6,7 @@ use Illuminate\Support\Collection;
 
 interface WidthCalculator
 {
-    public function calculateWidthsFromFile(string $imagePath): Collection;
+    public function calculateWidthsFromFile($imagePath);
 
-    public function calculateWidths(int $filesize, int $width, int $height): Collection;
+    public function calculateWidths(int $filesize, int $width, int $height);
 }

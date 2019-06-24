@@ -8,7 +8,7 @@ use Spatie\MediaLibrary\Tests\Support\TestModels\TestModel;
 
 class TestPathGenerator implements PathGenerator
 {
-    public function getPath(Media $media): string
+    public function getPath(Media $media)
     {
         $entry = TestModel::find($media->model_id);
 
@@ -17,12 +17,12 @@ class TestPathGenerator implements PathGenerator
         return "{$entry->id}/{$fileFolder}/";
     }
 
-    public function getPathForConversions(Media $media): string
+    public function getPathForConversions(Media $media)
     {
         return $this->getPath($media).'/custom_conversions/';
     }
 
-    public function getPathForResponsiveImages(Media $media): string
+    public function getPathForResponsiveImages(Media $media)
     {
         return $this->getPath($media).'/custom_responsive_images/';
     }

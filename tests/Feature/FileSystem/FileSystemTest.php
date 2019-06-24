@@ -12,7 +12,7 @@ class FileSystemTest extends TestCase
      */
     protected $filesystem;
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 

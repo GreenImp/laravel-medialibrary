@@ -15,7 +15,7 @@ class S3IntegrationTest extends TestCase
     /** @var @string */
     protected $s3BaseDirectory;
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 
@@ -28,7 +28,7 @@ class S3IntegrationTest extends TestCase
         $this->app['config']->set('medialibrary.path_generator', S3TestPathGenerator::class);
     }
 
-    public function tearDown(): void
+    public function tearDown()
     {
         $this->cleanUpS3();
 
@@ -182,7 +182,7 @@ class S3IntegrationTest extends TestCase
             'Key' => $media->getPath(),
         ]));
 
-        $this->assertEquals('READ', $responseForMainItem->get('Grants')[1]['Permission'] ?? null);
+        $this->assertEquals('READ', !empty($responseForMainItem->get('Grants')[1]['Permission']) ? $responseForMainItem->get('Grants')[1]['Permission'] : null);
 
         /** @var \Aws\Result $responseForConversion */
         $responseForConversion = $client->execute($client->getCommand('GetObjectAcl', [
@@ -190,7 +190,7 @@ class S3IntegrationTest extends TestCase
             'Key' => $media->getPath('thumb'),
         ]));
 
-        $this->assertEquals('READ', $responseForConversion->get('Grants')[1]['Permission'] ?? null);
+        $this->assertEquals('READ', !empty($responseForConversion->get('Grants')[1]['Permission']) ? $responseForConversion->get('Grants')[1]['Permission'] : null);
     }
 
     /** @test */
@@ -274,7 +274,7 @@ class S3IntegrationTest extends TestCase
         });
     }
 
-    protected function getS3Client(): S3Client
+    protected function getS3Client()
     {
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = app(Factory::class)->disk('s3_disk');
@@ -285,12 +285,12 @@ class S3IntegrationTest extends TestCase
         return $client;
     }
 
-    protected function assertS3FileExists(string $filePath)
+    protected function assertS3FileExists($filePath)
     {
         $this->assertTrue(Storage::disk('s3_disk')->has($filePath));
     }
 
-    protected function assertS3FileNotExists(string $filePath)
+    protected function assertS3FileNotExists($filePath)
     {
         $this->assertFalse(Storage::disk('s3_disk')->has($filePath));
     }
@@ -300,7 +300,7 @@ class S3IntegrationTest extends TestCase
         return ! empty(getenv('AWS_KEY'));
     }
 
-    public static function getS3BaseTestDirectory(): string
+    public static function getS3BaseTestDirectory()
     {
         return md5(getenv('TRAVIS_BUILD_ID').app()->version().phpversion());
     }

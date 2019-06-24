@@ -82,7 +82,7 @@ class CleanCommand extends Command
         $this->info('All done!');
     }
 
-    public function getMediaItems(): DbCollection
+    public function getMediaItems()
     {
         $modelType = $this->argument('modelType');
         $collectionName = $this->argument('collectionName');
@@ -128,10 +128,10 @@ class CleanCommand extends Command
         $currentFilePaths = $this->fileSystem->disk($media->disk)->files($conversionPath);
 
         with(new Collection($currentFilePaths))
-            ->reject(function (string $currentFilePath) use ($conversionFilePaths) {
+            ->reject(function ($currentFilePath) use ($conversionFilePaths) {
                 return $conversionFilePaths->contains(basename($currentFilePath));
             })
-            ->each(function (string $currentFilePath) use ($media) {
+            ->each(function ($currentFilePath) use ($media) {
                 if (! $this->isDryRun) {
                     $this->fileSystem->disk($media->disk)->delete($currentFilePath);
 
@@ -153,7 +153,7 @@ class CleanCommand extends Command
         $responsiveImagesGeneratedFor = array_keys($media->responsive_images);
 
         with(new Collection($responsiveImagesGeneratedFor))
-            ->map(function (string $generatedFor) use ($media) {
+            ->map(function ($generatedFor) use ($media) {
                 return $media->responsiveImages($generatedFor);
             })
             ->reject(function (RegisteredResponsiveImages $responsiveImages) use ($conversionNames) {
@@ -177,12 +177,12 @@ class CleanCommand extends Command
         $mediaIds = new Collection($this->mediaRepository->all()->pluck('id')->toArray());
 
         with(new Collection($this->fileSystem->disk($diskName)->directories()))
-            ->filter(function (string $directory) {
+            ->filter(function ($directory) {
                 return is_numeric($directory);
             })
-            ->reject(function (string $directory) use ($mediaIds) {
+            ->reject(function ($directory) use ($mediaIds) {
                 return $mediaIds->contains((int) $directory);
-            })->each(function (string $directory) use ($diskName) {
+            })->each(function ($directory) use ($diskName) {
                 if (! $this->isDryRun) {
                     $this->fileSystem->disk($diskName)->deleteDirectory($directory);
                 }
@@ -195,17 +195,17 @@ class CleanCommand extends Command
             });
     }
 
-    protected function markConversionAsRemoved(Media $media, string $conversionPath)
+    protected function markConversionAsRemoved(Media $media, $conversionPath)
     {
         $conversionFile = pathinfo($conversionPath, PATHINFO_FILENAME);
 
         $generatedConversionName = null;
 
         $media->getGeneratedConversions()
-            ->filter(function (bool $isGenerated, string $generatedConversionName) use ($conversionFile) {
+            ->filter(function (bool $isGenerated, $generatedConversionName) use ($conversionFile) {
                 return str_contains($conversionFile, $generatedConversionName);
             })
-            ->each(function (bool $isGenerated, string $generatedConversionName) use ($media) {
+            ->each(function (bool $isGenerated, $generatedConversionName) use ($media) {
                 $media->markAsConversionGenerated($generatedConversionName, false);
             });
 

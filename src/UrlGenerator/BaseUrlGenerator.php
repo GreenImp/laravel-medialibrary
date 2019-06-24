@@ -27,7 +27,7 @@ abstract class BaseUrlGenerator implements UrlGenerator
      *
      * @return \Spatie\MediaLibrary\UrlGenerator\UrlGenerator
      */
-    public function setMedia(Media $media): UrlGenerator
+    public function setMedia(Media $media)
     {
         $this->media = $media;
 
@@ -39,7 +39,7 @@ abstract class BaseUrlGenerator implements UrlGenerator
      *
      * @return \Spatie\MediaLibrary\UrlGenerator\UrlGenerator
      */
-    public function setConversion(Conversion $conversion): UrlGenerator
+    public function setConversion(Conversion $conversion)
     {
         $this->conversion = $conversion;
 
@@ -51,7 +51,7 @@ abstract class BaseUrlGenerator implements UrlGenerator
      *
      * @return \Spatie\MediaLibrary\UrlGenerator\UrlGenerator
      */
-    public function setPathGenerator(PathGenerator $pathGenerator): UrlGenerator
+    public function setPathGenerator(PathGenerator $pathGenerator)
     {
         $this->pathGenerator = $pathGenerator;
 
@@ -61,7 +61,7 @@ abstract class BaseUrlGenerator implements UrlGenerator
     /*
      * Get the path to the requested file relative to the root of the media directory.
      */
-    public function getPathRelativeToRoot(): string
+    public function getPathRelativeToRoot()
     {
         if (is_null($this->conversion)) {
             return $this->pathGenerator->getPath($this->media).($this->media->file_name);
@@ -74,7 +74,7 @@ abstract class BaseUrlGenerator implements UrlGenerator
             .$this->conversion->getResultExtension($this->media->extension);
     }
 
-    public function rawUrlEncodeFilename(string $path = ''): string
+    public function rawUrlEncodeFilename($path = '')
     {
         return pathinfo($path, PATHINFO_DIRNAME).'/'.rawurlencode(pathinfo($path, PATHINFO_BASENAME));
     }

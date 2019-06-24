@@ -18,7 +18,7 @@ class File
         return new static($media->file_name, $media->size, $media->mime_type);
     }
 
-    public function __construct(string $name, int $size, string $mimeType)
+    public function __construct($name, $size, $mimeType)
     {
         $this->name = $name;
 

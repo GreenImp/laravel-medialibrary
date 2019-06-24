@@ -10,7 +10,7 @@ class ConversionCollectionTest extends TestCase
     /** @var \Spatie\MediaLibrary\Models\Media */
     protected $media;
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 

@@ -26,7 +26,7 @@ class ResponsiveImage
         $media->save();
     }
 
-    public static function registerTinySvg(Media $media, string $base64Svg, string $conversionName)
+    public static function registerTinySvg(Media $media, $base64Svg, $conversionName)
     {
         $responsiveImages = $media->responsive_images;
 
@@ -37,21 +37,21 @@ class ResponsiveImage
         $media->save();
     }
 
-    public function __construct(string $fileName, Media $media)
+    public function __construct($fileName, Media $media)
     {
         $this->fileName = $fileName;
 
         $this->media = $media;
     }
 
-    public function url(): string
+    public function url()
     {
         $urlGenerator = UrlGeneratorFactory::createForMedia($this->media);
 
         return $urlGenerator->getResponsiveImagesDirectoryUrl().$this->fileName;
     }
 
-    public function generatedFor(): string
+    public function generatedFor()
     {
         $propertyParts = $this->getPropertyParts();
 
@@ -62,7 +62,7 @@ class ResponsiveImage
         return implode('_', $propertyParts);
     }
 
-    public function width(): int
+    public function width()
     {
         $propertyParts = $this->getPropertyParts();
 
@@ -71,21 +71,21 @@ class ResponsiveImage
         return (int) last($propertyParts);
     }
 
-    public function height(): int
+    public function height()
     {
         $propertyParts = $this->getPropertyParts();
 
         return (int) last($propertyParts);
     }
 
-    protected function getPropertyParts(): array
+    protected function getPropertyParts()
     {
         $propertyString = $this->stringBetween($this->fileName, '___', '.');
 
         return explode('_', $propertyString);
     }
 
-    protected function stringBetween(string $subject, string $startCharacter, string $endCharacter): string
+    protected function stringBetween($subject, $startCharacter, $endCharacter)
     {
         $between = strstr($subject, $startCharacter);
 

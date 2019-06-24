@@ -30,7 +30,7 @@ class BasePathGeneratorTest extends TestCase
      */
     protected $pathGenerator;
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 

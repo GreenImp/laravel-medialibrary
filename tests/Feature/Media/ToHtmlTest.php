@@ -11,7 +11,7 @@ class ToHtmlTest extends TestCase
 {
     use MatchesSnapshots;
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 

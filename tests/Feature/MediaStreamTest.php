@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MediaStreamTest extends TestCase
 {
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 
@@ -87,7 +87,7 @@ class MediaStreamTest extends TestCase
         $this->assertFalse($this->fileExistsInZip($zipPath, $filename), "Failed to assert that {$zipPath} doesn't contain a file name {$filename}");
     }
 
-    protected function fileExistsInZip($zipPath, $filename): bool
+    protected function fileExistsInZip($zipPath, $filename)
     {
         $zip = new ZipArchive();
 

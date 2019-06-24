@@ -8,7 +8,7 @@ use Spatie\MediaLibrary\Tests\Support\TestModels\TestModelWithoutMediaConversion
 
 class DeleteMediaTest extends TestCase
 {
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 

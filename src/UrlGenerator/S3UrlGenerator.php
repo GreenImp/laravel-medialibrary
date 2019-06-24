@@ -23,7 +23,7 @@ class S3UrlGenerator extends BaseUrlGenerator
      *
      * @return string
      */
-    public function getUrl(): string
+    public function getUrl()
     {
         $url = $this->getPathRelativeToRoot();
 
@@ -44,7 +44,7 @@ class S3UrlGenerator extends BaseUrlGenerator
      *
      * @return string
      */
-    public function getTemporaryUrl(DateTimeInterface $expiration, array $options = []): string
+    public function getTemporaryUrl(DateTimeInterface $expiration, array $options = [])
     {
         return $this
             ->filesystemManager
@@ -57,7 +57,7 @@ class S3UrlGenerator extends BaseUrlGenerator
      *
      * @return string
      */
-    public function getPath(): string
+    public function getPath()
     {
         return $this->getPathRelativeToRoot();
     }
@@ -67,7 +67,7 @@ class S3UrlGenerator extends BaseUrlGenerator
      *
      * @return string
      */
-    public function getResponsiveImagesDirectoryUrl(): string
+    public function getResponsiveImagesDirectoryUrl()
     {
         return Config::get('medialibrary.s3.domain').'/'.$this->pathGenerator->getPathForResponsiveImages($this->media);
     }

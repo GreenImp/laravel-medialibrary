@@ -8,7 +8,7 @@ use Spatie\MediaLibrary\ImageGenerators\BaseGenerator;
 
 class Pdf extends BaseGenerator
 {
-    public function convert(string $file, Conversion $conversion = null): string
+    public function convert($file, Conversion $conversion = null)
     {
         $imageFile = pathinfo($file, PATHINFO_DIRNAME).'/'.pathinfo($file, PATHINFO_FILENAME).'.jpg';
 
@@ -17,7 +17,7 @@ class Pdf extends BaseGenerator
         return $imageFile;
     }
 
-    public function requirementsAreInstalled(): bool
+    public function requirementsAreInstalled()
     {
         if (! class_exists('Imagick')) {
             return false;
@@ -30,12 +30,12 @@ class Pdf extends BaseGenerator
         return true;
     }
 
-    public function supportedExtensions(): Collection
+    public function supportedExtensions()
     {
         return new Collection(['pdf']);
     }
 
-    public function supportedMimeTypes(): Collection
+    public function supportedMimeTypes()
     {
         return new Collection(['application/pdf']);
     }

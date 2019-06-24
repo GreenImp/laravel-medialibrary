@@ -30,7 +30,7 @@ class Conversion
     /** @var bool */
     protected $generateResponsiveImages = false;
 
-    public function __construct(string $name)
+    public function __construct($name)
     {
         $this->name = $name;
 
@@ -39,12 +39,12 @@ class Conversion
             ->format('jpg');
     }
 
-    public static function create(string $name)
+    public static function create($name)
     {
         return new static($name);
     }
 
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
@@ -53,43 +53,43 @@ class Conversion
      * Set the timecode in seconds to extract a video thumbnail.
      * Only used on video media.
      */
-    public function extractVideoFrameAtSecond(int $timeCode): self
+    public function extractVideoFrameAtSecond(int $timeCode)
     {
         $this->extractVideoFrameAtSecond = $timeCode;
 
         return $this;
     }
 
-    public function getExtractVideoFrameAtSecond(): int
+    public function getExtractVideoFrameAtSecond()
     {
         return $this->extractVideoFrameAtSecond;
     }
 
-    public function keepOriginalImageFormat(): self
+    public function keepOriginalImageFormat()
     {
         $this->keepOriginalImageFormat = true;
 
         return $this;
     }
 
-    public function shouldKeepOriginalImageFormat(): bool
+    public function shouldKeepOriginalImageFormat()
     {
         return $this->keepOriginalImageFormat;
     }
 
-    public function getManipulations(): Manipulations
+    public function getManipulations()
     {
         return $this->manipulations;
     }
 
-    public function removeManipulation(string $manipulationName) : self
+    public function removeManipulation($manipulationName)
     {
         $this->manipulations->removeManipulation($manipulationName);
 
         return $this;
     }
 
-    public function withoutManipulations() : self
+    public function withoutManipulations()
     {
         $this->manipulations = new Manipulations();
 
@@ -114,7 +114,7 @@ class Conversion
      *
      * @return $this
      */
-    public function setManipulations($manipulations) : self
+    public function setManipulations($manipulations)
     {
         if ($manipulations instanceof Manipulations) {
             $this->manipulations = $this->manipulations->mergeManipulations($manipulations);
@@ -134,7 +134,7 @@ class Conversion
      *
      * @return $this
      */
-    public function addAsFirstManipulations(Manipulations $manipulations) : self
+    public function addAsFirstManipulations(Manipulations $manipulations)
     {
         $manipulationSequence = $manipulations->getManipulationSequence()->toArray();
 
@@ -152,7 +152,7 @@ class Conversion
      *
      * @return $this
      */
-    public function performOnCollections(...$collectionNames) : self
+    public function performOnCollections(...$collectionNames)
     {
         $this->performOnCollections = $collectionNames;
 
@@ -163,7 +163,7 @@ class Conversion
      * Determine if this conversion should be performed on the given
      * collection.
      */
-    public function shouldBePerformedOn(string $collectionName): bool
+    public function shouldBePerformedOn($collectionName)
     {
         //if no collections were specified, perform conversion on all collections
         if (! count($this->performOnCollections)) {
@@ -182,7 +182,7 @@ class Conversion
      *
      * @return $this
      */
-    public function queued() : self
+    public function queued()
     {
         $this->performOnQueue = true;
 
@@ -194,7 +194,7 @@ class Conversion
      *
      * @return $this
      */
-    public function nonQueued() : self
+    public function nonQueued()
     {
         $this->performOnQueue = false;
 
@@ -206,7 +206,7 @@ class Conversion
      *
      * @return $this
      */
-    public function nonOptimized() : self
+    public function nonOptimized()
     {
         $this->removeManipulation('optimize');
 
@@ -216,7 +216,7 @@ class Conversion
     /**
      * When creating the converted image, responsive images will be created as well.
      */
-    public function withResponsiveImages() : self
+    public function withResponsiveImages()
     {
         $this->generateResponsiveImages = true;
 
@@ -226,7 +226,7 @@ class Conversion
     /**
      * Determine if responsive images should be created for this conversion.
      */
-    public function shouldGenerateResponsiveImages(): bool
+    public function shouldGenerateResponsiveImages()
     {
         return $this->generateResponsiveImages;
     }
@@ -234,7 +234,7 @@ class Conversion
     /*
      * Determine if the conversion should be queued.
      */
-    public function shouldBeQueued(): bool
+    public function shouldBeQueued()
     {
         return $this->performOnQueue;
     }
@@ -242,7 +242,7 @@ class Conversion
     /*
      * Get the extension that the result of this conversion must have.
      */
-    public function getResultExtension(string $originalFileExtension = ''): string
+    public function getResultExtension($originalFileExtension = '')
     {
         if ($this->shouldKeepOriginalImageFormat()) {
             if (in_array($originalFileExtension, ['jpg', 'pjpg', 'png', 'gif'])) {
@@ -257,7 +257,7 @@ class Conversion
         return $originalFileExtension;
     }
 
-    public function getConversionFile(string $file): string
+    public function getConversionFile($file)
     {
         $fileName = pathinfo($file, PATHINFO_FILENAME);
 

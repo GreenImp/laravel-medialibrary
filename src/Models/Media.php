@@ -85,7 +85,7 @@ class Media extends Model
         }
     }
 
-    public function model(): MorphTo
+    public function model()
     {
         return $this->morphTo();
     }
@@ -93,7 +93,7 @@ class Media extends Model
     /*
      * Get the full url to a original media file.
     */
-    public function getFullUrl(string $conversionName = ''): string
+    public function getFullUrl($conversionName = '')
     {
         return url($this->getUrl($conversionName));
     }
@@ -101,14 +101,14 @@ class Media extends Model
     /*
      * Get the url to a original media file.
      */
-    public function getUrl(string $conversionName = ''): string
+    public function getUrl($conversionName = '')
     {
         $urlGenerator = UrlGeneratorFactory::createForMedia($this, $conversionName);
 
         return $urlGenerator->getUrl();
     }
 
-    public function getTemporaryUrl(DateTimeInterface $expiration, string $conversionName = '', array $options = []): string
+    public function getTemporaryUrl(DateTimeInterface $expiration, $conversionName = '', array $options = [])
     {
         $urlGenerator = UrlGeneratorFactory::createForMedia($this, $conversionName);
 
@@ -118,19 +118,19 @@ class Media extends Model
     /*
      * Get the path to the original media file.
      */
-    public function getPath(string $conversionName = ''): string
+    public function getPath($conversionName = '')
     {
         $urlGenerator = UrlGeneratorFactory::createForMedia($this, $conversionName);
 
         return $urlGenerator->getPath();
     }
 
-    public function getImageGenerators(): Collection
+    public function getImageGenerators()
     {
         return new Collection(Config::get('medialibrary.image_generators'));
     }
 
-    public function getTypeAttribute(): string
+    public function getTypeAttribute()
     {
         $type = $this->getTypeFromExtension();
 
@@ -141,7 +141,7 @@ class Media extends Model
         return $this->getTypeFromMime();
     }
 
-    public function getTypeFromExtension(): string
+    public function getTypeFromExtension()
     {
         /** @var ImageGenerator $imageGenerator */
         $imageGenerator = $this->getImageGenerators()
@@ -158,7 +158,7 @@ class Media extends Model
             : static::TYPE_OTHER;
     }
 
-    public function getTypeFromMime(): string
+    public function getTypeFromMime()
     {
         /** @var ImageGenerator $imageGenerator */
         $imageGenerator = $this->getImageGenerators()
@@ -175,17 +175,17 @@ class Media extends Model
             : static::TYPE_OTHER;
     }
 
-    public function getExtensionAttribute(): string
+    public function getExtensionAttribute()
     {
         return pathinfo($this->file_name, PATHINFO_EXTENSION);
     }
 
-    public function getHumanReadableSizeAttribute(): string
+    public function getHumanReadableSizeAttribute()
     {
         return File::getHumanReadableSize($this->size);
     }
 
-    public function getDiskDriverName(): string
+    public function getDiskDriverName()
     {
         return strtolower(Config::get("medialibrary.disks.{$this->disk}.driver"));
     }
@@ -193,7 +193,7 @@ class Media extends Model
     /*
      * Determine if the media item has a custom property with the given name.
      */
-    public function hasCustomProperty(string $propertyName): bool
+    public function hasCustomProperty($propertyName)
     {
         return array_has($this->custom_properties, $propertyName);
     }
@@ -206,7 +206,7 @@ class Media extends Model
      *
      * @return mixed
      */
-    public function getCustomProperty(string $propertyName, $default = null)
+    public function getCustomProperty($propertyName, $default = null)
     {
         return array_get($this->custom_properties, $propertyName, $default);
     }
@@ -217,7 +217,7 @@ class Media extends Model
      *
      * @return $this
      */
-    public function setCustomProperty(string $name, $value): self
+    public function setCustomProperty($name, $value)
     {
         $customProperties = $this->custom_properties;
 
@@ -228,7 +228,7 @@ class Media extends Model
         return $this;
     }
 
-    public function forgetCustomProperty(string $name): self
+    public function forgetCustomProperty($name)
     {
         $customProperties = $this->custom_properties;
 
@@ -242,7 +242,7 @@ class Media extends Model
     /*
      * Get all the names of the registered media conversions.
      */
-    public function getMediaConversionNames(): array
+    public function getMediaConversionNames()
     {
         $conversions = ConversionCollection::createForMedia($this);
 
@@ -251,14 +251,14 @@ class Media extends Model
         })->toArray();
     }
 
-    public function hasGeneratedConversion(string $conversionName): bool
+    public function hasGeneratedConversion($conversionName)
     {
         $generatedConversions = $this->getGeneratedConversions();
 
-        return $generatedConversions[$conversionName] ?? false;
+        return !empty($generatedConversions[$conversionName]) ? $generatedConversions[$conversionName] : false;
     }
 
-    public function markAsConversionGenerated(string $conversionName, bool $generated): self
+    public function markAsConversionGenerated($conversionName, $generated)
     {
         $this->setCustomProperty("generated_conversions.{$conversionName}", $generated);
 
@@ -267,7 +267,7 @@ class Media extends Model
         return $this;
     }
 
-    public function getGeneratedConversions(): Collection
+    public function getGeneratedConversions()
     {
         return new Collection($this->getCustomProperty('generated_conversions', []));
     }
@@ -300,17 +300,17 @@ class Media extends Model
         }, 200, $downloadHeaders);
     }
 
-    public function getResponsiveImageUrls(string $conversionName = ''): array
+    public function getResponsiveImageUrls($conversionName = '')
     {
         return $this->responsiveImages($conversionName)->getUrls();
     }
 
-    public function hasResponsiveImages(string $conversionName = ''): bool
+    public function hasResponsiveImages($conversionName = '')
     {
         return count($this->getResponsiveImageUrls($conversionName)) > 0;
     }
 
-    public function getSrcset(string $conversionName = ''): string
+    public function getSrcset($conversionName = '')
     {
         return $this->responsiveImages($conversionName)->getSrcset();
     }
@@ -326,7 +326,7 @@ class Media extends Model
      *
      * @return string
      */
-    public function img($conversion = '', array $extraAttributes = []): string
+    public function img($conversion = '', array $extraAttributes = [])
     {
         if (! (new Image())->canHandleMime($this->mime_type)) {
             return '';
@@ -335,7 +335,7 @@ class Media extends Model
         if (is_array($conversion)) {
             $attributes = $conversion;
 
-            $conversion = $attributes['conversion'] ?? '';
+            $conversion = $attributes['conversion'] ?: '';
 
             unset($attributes['conversion']);
 
@@ -373,7 +373,7 @@ class Media extends Model
         ));
     }
 
-    public function move(HasMedia $model, $collectionName = 'default'): self
+    public function move(HasMedia $model, $collectionName = 'default')
     {
         $newMedia = $this->copy($model, $collectionName);
 
@@ -382,7 +382,7 @@ class Media extends Model
         return $newMedia;
     }
 
-    public function copy(HasMedia $model, $collectionName = 'default'): self
+    public function copy(HasMedia $model, $collectionName = 'default')
     {
         throw new \Exception('Functionality not complete for Laravel 4.2');
         /*$temporaryDirectory = TemporaryDirectory::create();
@@ -402,7 +402,7 @@ class Media extends Model
         return $newMedia;*/
     }
 
-    public function responsiveImages(string $conversionName = ''): RegisteredResponsiveImages
+    public function responsiveImages($conversionName = '')
     {
         return new RegisteredResponsiveImages($this, $conversionName);
     }

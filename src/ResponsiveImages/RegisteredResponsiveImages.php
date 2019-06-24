@@ -17,7 +17,7 @@ class RegisteredResponsiveImages
     /** string */
     public $generatedFor;
 
-    public function __construct(Media $media, string $conversionName = '')
+    public function __construct(Media $media, $conversionName = '')
     {
         $this->media = $media;
 
@@ -25,8 +25,8 @@ class RegisteredResponsiveImages
             ? 'medialibrary_original'
             : $conversionName;
 
-        $this->files = with(new Collection($media->responsive_images[$this->generatedFor]['urls'] ?? []))
-            ->map(function (string $fileName) use ($media) {
+        $this->files = with(new Collection(!empty($media->responsive_images[$this->generatedFor]['urls']) ? $media->responsive_images[$this->generatedFor]['urls'] : []))
+            ->map(function ($fileName) use ($media) {
                 return new ResponsiveImage($fileName, $media);
             })
             ->filter(function (ResponsiveImage $responsiveImage) {
@@ -34,7 +34,7 @@ class RegisteredResponsiveImages
             });
     }
 
-    public function getUrls(): array
+    public function getUrls()
     {
         return $this->files
             ->map(function (ResponsiveImage $responsiveImage) {
@@ -44,7 +44,7 @@ class RegisteredResponsiveImages
             ->toArray();
     }
 
-    public function getSrcset(): string
+    public function getSrcset()
     {
         $filesSrcset = $this->files
             ->map(function (ResponsiveImage $responsiveImage) {
@@ -62,9 +62,9 @@ class RegisteredResponsiveImages
         return $filesSrcset;
     }
 
-    public function getPlaceholderSvg(): ?string
+    public function getPlaceholderSvg()
     {
-        return $this->media->responsive_images[$this->generatedFor]['base64svg'] ?? null;
+        return !empty($this->media->responsive_images[$this->generatedFor]['base64svg']) ? $this->media->responsive_images[$this->generatedFor]['base64svg'] : null;
     }
 
     public function delete()

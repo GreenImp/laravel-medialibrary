@@ -11,7 +11,7 @@ use Spatie\MediaLibrary\Events\ConversionHasBeenCompleted;
 
 class EventTest extends TestCase
 {
-    public function setUp(): void
+    public function setUp()
     {
         parent::setup();
 

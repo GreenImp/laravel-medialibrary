@@ -6,7 +6,7 @@ use Spatie\MediaLibrary\Helpers\ImageFactory;
 
 class Blurred implements TinyPlaceholderGenerator
 {
-    public function generateTinyPlaceholder(string $sourceImagePath, string $tinyImageDestinationPath)
+    public function generateTinyPlaceholder($sourceImagePath, $tinyImageDestinationPath)
     {
         $sourceImage = ImageFactory::load($sourceImagePath);
 

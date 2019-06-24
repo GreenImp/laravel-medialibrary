@@ -22,7 +22,7 @@ class PathGeneratorFactory
         return app($pathGeneratorClass);
     }
 
-    protected static function guardAgainstInvalidPathGenerator(string $pathGeneratorClass)
+    protected static function guardAgainstInvalidPathGenerator($pathGeneratorClass)
     {
         if (! class_exists($pathGeneratorClass)) {
             throw InvalidPathGenerator::doesntExist($pathGeneratorClass);

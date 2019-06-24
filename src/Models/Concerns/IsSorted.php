@@ -13,12 +13,12 @@ trait IsSorted
         $this->$orderColumnName = $this->getHighestOrderNumber() + 1;
     }
 
-    public function getHighestOrderNumber(): int
+    public function getHighestOrderNumber()
     {
         return (int) static::max($this->determineOrderColumnName());
     }
 
-    public function scopeOrdered(Builder $query): Builder
+    public function scopeOrdered(Builder $query)
     {
         return $query->orderBy($this->determineOrderColumnName());
     }
@@ -32,7 +32,7 @@ trait IsSorted
      * @param array $ids
      * @param int   $startOrder
      */
-    public static function setNewOrder(array $ids, int $startOrder = 1)
+    public static function setNewOrder(array $ids, $startOrder = 1)
     {
         foreach ($ids as $id) {
             $model = static::find($id);
@@ -44,13 +44,13 @@ trait IsSorted
         }
     }
 
-    protected function determineOrderColumnName(): string
+    protected function determineOrderColumnName()
     {
-        return $this->sortable['order_column_name'] ?? 'order_column';
+        return !empty($this->sortable['order_column_name']) ? $this->sortable['order_column_name'] : 'order_column';
     }
 
-    public function shouldSortWhenCreating(): bool
+    public function shouldSortWhenCreating()
     {
-        return $this->sortable['sort_when_creating'] ?? true;
+        return !empty($this->sortable['sort_when_creating']) ? $this->sortable['sort_when_creating'] : true;
     }
 }
